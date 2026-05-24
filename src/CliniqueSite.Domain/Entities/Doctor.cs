@@ -1,0 +1,21 @@
+﻿using CliniqueSite.Domain.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CliniqueSite.Domain.Entities
+{
+    public class Doctor : BaseEntity
+    {
+        public string FullName { get; set; } = string.Empty;
+
+        public Guid SpecialtyId { get; set; }
+        public Specialty Specialty { get; set; } = null!;
+
+        public bool IsActive { get; set; } = true;
+
+        public ICollection<AppointmentSlot> Slots { get; set; } = new List<AppointmentSlot>();
+    }
+}
