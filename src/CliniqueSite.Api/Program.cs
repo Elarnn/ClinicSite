@@ -1,8 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using CliniqueSite.Infrastructure.Data; 
-using System.Data;
 using CliniqueSite.Application.Interfaces;
 using CliniqueSite.Application.Services;
+using CliniqueSite.Infrastructure.Data; 
+using CliniqueSite.Infrastructure.Seed;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,18 @@ builder.Services.AddScoped<IApplicationDbContext>(provider =>
 
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 
+builder.Services.AddScoped<IAppointmentSlotService, AppointmentSlotService>();
+
 var app = builder.Build();
+
+using(var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    await context.Database.MigrateAsync();
+
+    await DbSeeder.SeedAsync(context);
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
