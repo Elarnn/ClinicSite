@@ -14,11 +14,18 @@ namespace CliniqueSite.Api.Controllers
             _appointmentSlotsService = appointmentSlotsService;
         }
 
-        [HttpGet]
+        [HttpGet("free")]
         public async Task<IActionResult> GetAppointmentSlots(Guid doctorId)
         {
             var slots = await _appointmentSlotsService.GetFreeByDoctorAsync(doctorId);
             return Ok(slots);
+        }
+
+        [HttpPost("{slotId:guid}/reserve")]
+        public async Task<IActionResult> ReserveSlot(Guid slotId)
+        {
+            var result = await _appointmentSlotsService.ReserveSlotAsync(slotId);
+            return Ok(result);
         }
     }
 }

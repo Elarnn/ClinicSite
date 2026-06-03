@@ -10,5 +10,6 @@ namespace CliniqueSite.Application.Interfaces
     public interface IAppointmentSlotService
     {
         Task<List<AppointmentSlotDto>> GetFreeByDoctorAsync(Guid doctorId);
+        Task<ReserveSlotResultDto> ReserveSlotAsync(Guid slotId);
     }
 }

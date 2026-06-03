@@ -10,7 +10,7 @@ namespace CliniqueSite.Application.DTOs.Appointments;
 
     public class AppointmentSlotDto
     {
-        public Guid Id { get; set; }
+        public Guid SlotId { get; set; }
         public DateTime StartTimeUtc { get; set; }
         public DateTime EndTimeUtc { get; set; }
 
