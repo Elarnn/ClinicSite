@@ -36,6 +36,8 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 
 builder.Services.AddScoped<IAppointmentSlotService, AppointmentSlotService>();
 
+builder.Services.AddScoped<IBookingService, BookingService>();
+
 var app = builder.Build();
 
 using(var scope = app.Services.CreateScope())
