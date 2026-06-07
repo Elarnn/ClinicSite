@@ -24,8 +24,19 @@ namespace CliniqueSite.Api.Controllers
         [HttpPost("{slotId:guid}/reserve")]
         public async Task<IActionResult> ReserveSlot(Guid slotId)
         {
-            var result = await _appointmentSlotsService.ReserveSlotAsync(slotId);
-            return Ok(result);
+            try
+            {
+                var result = await _appointmentSlotsService.ReserveSlotAsync(slotId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
     }
 }

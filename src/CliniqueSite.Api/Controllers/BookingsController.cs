@@ -17,7 +17,18 @@ public class BookingsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateBooking(CreateBookingDto dto)
     {
-        var result = await _bookingService.CreateBookingAsync(dto);
-        return Ok(result);
+        try
+        {
+            var result = await _bookingService.CreateBookingAsync(dto);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 }

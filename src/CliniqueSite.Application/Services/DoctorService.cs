@@ -18,10 +18,14 @@ namespace CliniqueSite.Application.Services
             _context = context;
         }
 
-        public async Task<List<DoctorDto>> GetDoctorsAsync()
+        public async Task<List<DoctorDto>> GetDoctorsAsync(Guid? specialtyId = null)
         {
-            var doctors = await _context.Doctors
-                .Where(d => d.IsActive)
+            var query = _context.Doctors.Where(d => d.IsActive);
+
+            if (specialtyId.HasValue)
+                query = query.Where(d => d.SpecialtyId == specialtyId.Value);
+
+            return await query
                 .Select(d => new DoctorDto
                 {
                     Id = d.Id,
@@ -29,7 +33,6 @@ namespace CliniqueSite.Application.Services
                     SpecialtyName = d.Specialty.Name
                 })
                 .ToListAsync();
-            return doctors;
         }
     }
 }

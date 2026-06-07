@@ -14,9 +14,9 @@ namespace CliniqueSite.Api.Controllers
             _doctorService = doctorService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetDoctors()
+        public async Task<IActionResult> GetDoctors([FromQuery] Guid? specialtyId = null)
         {
-            var doctors = await _doctorService.GetDoctorsAsync();
+            var doctors = await _doctorService.GetDoctorsAsync(specialtyId);
             return Ok(doctors);
         }
     }

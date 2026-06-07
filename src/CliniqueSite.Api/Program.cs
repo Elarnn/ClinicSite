@@ -32,6 +32,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IApplicationDbContext>(provider =>
     provider.GetRequiredService<AppDbContext>());
 
+builder.Services.AddScoped<ISpecialtyService, SpecialtyService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 
 builder.Services.AddScoped<IAppointmentSlotService, AppointmentSlotService>();
