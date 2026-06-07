@@ -1,61 +1,111 @@
-import { useEffect, useState } from "react";
-import { getHealth, type HealthResponse } from "./api/health-api";
-import "./App.css";
+import { useState } from 'react';
+import './App.css';
+import type { AppointmentSlotDto, BookingResultDto, DoctorDto, ReserveSlotResultDto, SpecialtyDto } from './types';
+import { StepBar } from './components/StepBar';
+import { SpecialtyStep } from './components/SpecialtyStep';
+import { DoctorStep } from './components/DoctorStep';
+import { SlotStep } from './components/SlotStep';
+import { BookingFormStep } from './components/BookingFormStep';
+import { SuccessStep } from './components/SuccessStep';
 
-function App() {
-  const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+type AppState =
+  | { step: 1 }
+  | { step: 2; specialty: SpecialtyDto }
+  | { step: 3; specialty: SpecialtyDto; doctor: DoctorDto; unavailableSlots: AppointmentSlotDto[] }
+  | { step: 4; specialty: SpecialtyDto; doctor: DoctorDto; slot: AppointmentSlotDto; reservation: ReserveSlotResultDto; unavailableSlots: AppointmentSlotDto[] }
+  | { step: 'done'; booking: BookingResultDto };
 
-  useEffect(() => {
-    getHealth()
-      .then((data) => {
-        setHealth(data);
-      })
-      .catch((error: unknown) => {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError("Unknown error");
-        }
-      })
-      .finally(() => {
-        setIsLoading(false);
+const STEP_TITLES: Record<number | string, string> = {
+  1: 'Book Appointment',
+  2: 'Choose Doctor',
+  3: 'Choose Time',
+  4: 'Your Details',
+  done: 'Confirmed',
+};
+
+export default function App() {
+  const [state, setState] = useState<AppState>({ step: 1 });
+
+  const goBack = () => {
+    if (state.step === 2) setState({ step: 1 });
+    else if (state.step === 3) setState({ step: 2, specialty: state.specialty });
+    else if (state.step === 4)
+      setState({
+        step: 3,
+        specialty: state.specialty,
+        doctor: state.doctor,
+        unavailableSlots: [...state.unavailableSlots, state.slot],
       });
-  }, []);
+  };
 
-  if (isLoading) {
-    return <main className="container">Loading API status...</main>;
-  }
-
-  if (error) {
-    return (
-      <main className="container">
-        <h1>CliniqueSite</h1>
-        <p className="error">Backend error: {error}</p>
-      </main>
-    );
-  }
+  const title = STEP_TITLES[state.step];
+  const stepNum = typeof state.step === 'number' ? state.step : 4;
+  const showBack = state.step !== 1 && state.step !== 'done';
+  const showStepBar = state.step !== 'done';
 
   return (
-    <main className="container">
-      <h1>CliniqueSite</h1>
-      <p>Frontend is running.</p>
+    <div className="app">
+      <header className="app-header">
+        <div className="header-row">
+          {showBack && (
+            <button className="back-btn" onClick={goBack} aria-label="Go back">
+              ‹
+            </button>
+          )}
+          {!showBack && <span className="header-logo">🏥</span>}
+          <h1 className="header-title">{title}</h1>
+        </div>
+        {showStepBar && <StepBar current={stepNum} total={4} />}
+      </header>
 
-      <section className="card">
-        <h2>Backend status</h2>
-        <p>
-          <strong>Status:</strong> {health?.status}
-        </p>
-        <p>
-          <strong>Message:</strong> {health?.message}
-        </p>
-        <p>
-          <strong>Timestamp:</strong> {health?.timestamp}
-        </p>
-      </section>
-    </main>
+      <main className="app-main">
+        {state.step === 1 && (
+          <SpecialtyStep
+            onSelect={(specialty) => setState({ step: 2, specialty })}
+          />
+        )}
+        {state.step === 2 && (
+          <DoctorStep
+            specialty={state.specialty}
+            onSelect={(doctor) =>
+              setState({ step: 3, specialty: state.specialty, doctor, unavailableSlots: [] })
+            }
+          />
+        )}
+        {state.step === 3 && (
+          <SlotStep
+            specialty={state.specialty}
+            doctor={state.doctor}
+            unavailableSlots={state.unavailableSlots}
+            onSelect={(slot, reservation) =>
+              setState({
+                step: 4,
+                specialty: state.specialty,
+                doctor: state.doctor,
+                slot,
+                reservation,
+                unavailableSlots: state.unavailableSlots,
+              })
+            }
+          />
+        )}
+        {state.step === 4 && (
+          <BookingFormStep
+            specialty={state.specialty}
+            doctor={state.doctor}
+            slot={state.slot}
+            reservation={state.reservation}
+            onSuccess={(booking) => setState({ step: 'done', booking })}
+            onExpired={goBack}
+          />
+        )}
+        {state.step === 'done' && (
+          <SuccessStep
+            booking={state.booking}
+            onBookAgain={() => setState({ step: 1 })}
+          />
+        )}
+      </main>
+    </div>
   );
 }
-
-export default App;

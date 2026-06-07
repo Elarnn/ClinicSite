@@ -1,19 +1,625 @@
-.container {
-  max-width: 900px;
+/* ===========================
+   App shell
+=========================== */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
   margin: 0 auto;
-  padding: 48px 24px;
-  font-family: Arial, sans-serif;
+}
+
+/* ===========================
+   Header
+=========================== */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-bottom: 1px solid #ede9fe;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 16px;
+  gap: 10px;
+}
+
+.header-logo {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7c3aed;
+  font-size: 26px;
+  flex-shrink: 0;
+  transition: background 0.12s;
+}
+
+.back-btn:active {
+  background: #ede9fe;
+}
+
+.header-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1625;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===========================
+   Step bar
+=========================== */
+.step-bar {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px 10px;
+  gap: 6px;
+}
+
+.step-dot {
+  height: 4px;
+  border-radius: 2px;
+  background: #ddd8f5;
+  flex: 1;
+  transition: background 0.25s;
+}
+
+.step-dot.done {
+  background: #a78bfa;
+}
+
+.step-dot.active {
+  background: #7c3aed;
+}
+
+/* ===========================
+   Main content
+=========================== */
+.app-main {
+  flex: 1;
+  padding: 20px 16px 32px;
+}
+
+/* ===========================
+   Step intro
+=========================== */
+.step-intro {
+  margin-bottom: 20px;
+}
+
+.step-intro h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1625;
+  margin-bottom: 3px;
+}
+
+.step-intro p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ===========================
+   Cards (specialty / doctor)
+=========================== */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .card {
-  margin-top: 24px;
-  padding: 24px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  background: #f8f8f8;
+  background: #ffffff;
+  border: 1.5px solid #ede9fe;
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, transform 0.1s;
+  text-align: left;
+  width: 100%;
 }
 
-.error {
-  color: #b00020;
+.card:active {
+  background: #f5f3ff;
+  border-color: #7c3aed;
+  transform: scale(0.98);
+}
+
+.card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #ede9fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.card-icon.doctor-avatar {
+  font-size: 16px;
+  font-weight: 700;
+  color: #7c3aed;
+  font-style: normal;
+}
+
+.card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-title {
+  font-size: 16px;
   font-weight: 600;
+  color: #1a1625;
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.card-arrow {
+  color: #a78bfa;
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ===========================
+   Slots
+=========================== */
+.slot-group {
+  margin-bottom: 24px;
+}
+
+.slot-group-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.slot-btn {
+  background: #f5f3ff;
+  border: 1.5px solid #ddd8f5;
+  border-radius: 12px;
+  padding: 10px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.1s;
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.slot-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.slot-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.slot-btn.loading {
+  background: #ede9fe;
+  border-color: #7c3aed;
+}
+
+.slot-btn.unavailable {
+  opacity: 0.3;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.slot-time {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1625;
+}
+
+.slot-end {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ===========================
+   Booking summary (in form)
+=========================== */
+.booking-summary {
+  background: #f5f3ff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.booking-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.booking-summary-icon {
+  font-size: 18px;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.booking-summary-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7c3aed;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1px;
+}
+
+.booking-summary-value {
+  font-size: 14px;
+  color: #1a1625;
+  font-weight: 500;
+}
+
+/* ===========================
+   Timer
+=========================== */
+.timer-banner {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.timer-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.timer-text {
+  flex: 1;
+  font-size: 13px;
+  color: #92400e;
+}
+
+.timer-countdown {
+  font-size: 18px;
+  font-weight: 700;
+  color: #d97706;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.timer-banner.expiring {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.timer-banner.expiring .timer-text {
+  color: #991b1b;
+}
+
+.timer-banner.expiring .timer-countdown {
+  color: #dc2626;
+}
+
+/* ===========================
+   Form
+=========================== */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid #ddd8f5;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #1a1625;
+  background: #fafaf9;
+  transition: border-color 0.15s, background 0.15s;
+  outline: none;
+  display: block;
+}
+
+.form-input:focus {
+  border-color: #7c3aed;
+  background: #ffffff;
+}
+
+.form-input.error {
+  border-color: #dc2626;
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+.form-error {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 4px;
+}
+
+/* ===========================
+   Buttons
+=========================== */
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  background: #7c3aed;
+  color: #ffffff;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 0.15s, transform 0.1s, opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-primary:active:not(:disabled) {
+  background: #6d28d9;
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  width: 100%;
+  padding: 13px;
+  color: #7c3aed;
+  border: 1.5px solid #ddd8f5;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background 0.12s, transform 0.1s;
+  margin-top: 10px;
+}
+
+.btn-ghost:active {
+  background: #f5f3ff;
+  transform: scale(0.98);
+}
+
+/* ===========================
+   Loading / Spinner
+=========================== */
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 52px 0;
+  gap: 14px;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #ede9fe;
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-text {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ===========================
+   Error / Empty
+=========================== */
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  color: #991b1b;
+  font-size: 14px;
+}
+
+.error-message button {
+  margin-top: 10px;
+  color: #7c3aed;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.empty-icon {
+  font-size: 52px;
+  margin-bottom: 14px;
+}
+
+.empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+/* ===========================
+   Success screen
+=========================== */
+.success-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.success-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: #ecfdf5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  margin-bottom: 20px;
+}
+
+.success-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1625;
+  margin-bottom: 8px;
+}
+
+.success-subtitle {
+  font-size: 15px;
+  color: #6b7280;
+  margin-bottom: 28px;
+}
+
+.success-card {
+  background: #f5f3ff;
+  border-radius: 20px;
+  padding: 4px 16px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+.success-detail {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid #e9e5ff;
+}
+
+.success-detail:last-child {
+  border-bottom: none;
+}
+
+.success-detail-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.success-detail-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.success-detail-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7c3aed;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.success-detail-value {
+  font-size: 15px;
+  color: #1a1625;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+/* ===========================
+   Tablet / Desktop: center the "phone"
+=========================== */
+@media (min-width: 500px) {
+  body {
+    background: #ddd5ff;
+  }
+
+  #root {
+    align-items: center;
+    padding: 24px 0;
+    min-height: 100dvh;
+  }
+
+  .app {
+    border-radius: 32px;
+    box-shadow: 0 24px 80px rgba(109, 40, 217, 0.18);
+    min-height: min(calc(100dvh - 48px), 860px);
+    overflow: hidden;
+  }
 }
