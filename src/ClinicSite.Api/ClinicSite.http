@@ -1,0 +1,6 @@
+﻿@ClinicSite_HostAddress = http://localhost:5105
+
+GET {{ClinicSite_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
