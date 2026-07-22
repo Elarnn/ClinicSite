@@ -10,5 +10,7 @@ namespace ClinicSite.Application.Interfaces
     public interface IDoctorService
     {
         Task<List<DoctorDto>> GetDoctorsAsync(Guid? specialtyId = null);
+
+        Task<DoctorDto> CreateDoctorAsync(CreateDoctorDto request);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using ClinicSite.Application.DTOs.Doctors;
+using ClinicSite.Application.Exceptions;
 using ClinicSite.Application.Interfaces;
+using ClinicSite.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,6 +35,43 @@ namespace ClinicSite.Application.Services
                     SpecialtyName = d.Specialty.Name
                 })
                 .ToListAsync();
+        }
+
+        public async Task<DoctorDto> CreateDoctorAsync(CreateDoctorDto request)
+        {
+            var fullName = request.FullName.Trim();
+
+            if (string.IsNullOrEmpty(fullName))
+            {
+                throw new ValidationException("Имя врача не может быть пустым.");
+            }
+
+            var specialty = await _context.Specialties
+                .FirstOrDefaultAsync(s => s.Id == request.SpecialtyId);
+
+            if (specialty is null)
+            {
+                throw new ValidationException("Указанная специальность не найдена.");
+            }
+
+            var doctor = new Doctor
+            {
+                Id = Guid.NewGuid(),
+                FullName = fullName,
+                SpecialtyId = specialty.Id,
+                IsActive = true
+            };
+
+            _context.Doctors.Add(doctor);
+
+            await _context.SaveChangesAsync();
+
+            return new DoctorDto
+            {
+                Id = doctor.Id,
+                FullName = doctor.FullName,
+                SpecialtyName = specialty.Name
+            };
         }
     }
 }

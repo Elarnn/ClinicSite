@@ -2,10 +2,6 @@
 using ClinicSite.Application.DTOs.Specialties;
 using ClinicSite.Application.Interfaces;
 using ClinicSite.Domain.Entities;
-using CliniqueSite.Application.DTOs.Admin;
-using CliniqueSite.Application.DTOs.Specialties;
-using CliniqueSite.Application.Interfaces;
-using CliniqueSite.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CliniqueSite.Application.Services;

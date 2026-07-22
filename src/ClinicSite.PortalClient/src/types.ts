@@ -21,6 +21,19 @@ export interface BookingResultDto {
   createdAtUtc: string;
 }
 
+export interface CreateSpecialtyDto {
+  name: string;
+}
+
+export interface UpdateSpecialtyDto {
+  name: string;
+}
+
+export interface CreateDoctorDto {
+  fullName: string;
+  specialtyId: string;
+}
+
 export interface AdminBookingDto {
   bookingId: string;
   appointmentSlotId: string;

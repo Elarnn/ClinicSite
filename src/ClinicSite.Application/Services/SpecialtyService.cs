@@ -1,5 +1,6 @@
 ﻿using ClinicSite.Application.DTOs.Admin;
 using ClinicSite.Application.DTOs.Specialties;
+using ClinicSite.Application.Exceptions;
 using ClinicSite.Application.Interfaces;
 using ClinicSite.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -46,12 +47,18 @@ public class SpecialtyService : ISpecialtyService
     {
         var normalizedName = request.Name.Trim();
 
+        if (string.IsNullOrEmpty(normalizedName))
+        {
+            throw new ValidationException(
+                "Название специальности не может быть пустым.");
+        }
+
         var alreadyExists = await _context.Specialties
             .AnyAsync(s => s.Name.ToLower() == normalizedName.ToLower());
 
         if (alreadyExists)
         {
-            throw new InvalidOperationException(
+            throw new ConflictException(
                 "Специальность с таким названием уже существует.");
         }
 
@@ -86,6 +93,12 @@ public class SpecialtyService : ISpecialtyService
 
         var normalizedName = request.Name.Trim();
 
+        if (string.IsNullOrEmpty(normalizedName))
+        {
+            throw new ValidationException(
+                "Название специальности не может быть пустым.");
+        }
+
         var alreadyExists = await _context.Specialties
             .AnyAsync(s =>
                 s.Id != specialtyId &&
@@ -93,7 +106,7 @@ public class SpecialtyService : ISpecialtyService
 
         if (alreadyExists)
         {
-            throw new InvalidOperationException(
+            throw new ConflictException(
                 "Специальность с таким названием уже существует.");
         }
 
@@ -123,7 +136,7 @@ public class SpecialtyService : ISpecialtyService
 
         if (hasDoctors)
         {
-            throw new InvalidOperationException(
+            throw new ConflictException(
                 "Нельзя удалить специальность, к которой привязаны врачи.");
         }
 

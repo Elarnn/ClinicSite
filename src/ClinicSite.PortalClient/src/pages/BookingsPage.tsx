@@ -65,52 +65,54 @@ export function BookingsPage() {
           <p>Patient appointments will appear here.</p>
         </div>
       ) : (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Patient</th>
-              <th>Email</th>
-              <th>Doctor</th>
-              <th>Date & Time</th>
-              <th>Status</th>
-              <th>Comment</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {bookings.map((booking) => (
-              <tr key={booking.bookingId}>
-                <td>{booking.patientName}</td>
-                <td>{booking.patientEmail}</td>
-                <td>{booking.doctorName}</td>
-                <td>
-                  {formatDateTime(booking.startTimeUtc)} –{' '}
-                  {new Date(booking.endTimeUtc).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </td>
-                <td>
-                  {booking.isCancelled ? 'Cancelled' : 'Active'}
-                </td>
-                <td>{booking.comment || '—'}</td>
-                <td>
-                  {booking.isCancelled ? (
-                    <span>—</span>
-                  ) : (
-                    <button
-                      className="small-button danger"
-                      onClick={() => handleCancel(booking.bookingId)}
-                    >
-                      Cancel
-                    </button>
-                  )}
-                </td>
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Email</th>
+                <th>Doctor</th>
+                <th>Date & Time</th>
+                <th>Status</th>
+                <th>Comment</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {bookings.map((booking) => (
+                <tr key={booking.bookingId}>
+                  <td>{booking.patientName}</td>
+                  <td>{booking.patientEmail}</td>
+                  <td>{booking.doctorName}</td>
+                  <td>
+                    {formatDateTime(booking.startTimeUtc)} –{' '}
+                    {new Date(booking.endTimeUtc).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </td>
+                  <td>
+                    {booking.isCancelled ? 'Cancelled' : 'Active'}
+                  </td>
+                  <td>{booking.comment || '—'}</td>
+                  <td>
+                    {booking.isCancelled ? (
+                      <span>—</span>
+                    ) : (
+                      <button
+                        className="small-button danger"
+                        onClick={() => handleCancel(booking.bookingId)}
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

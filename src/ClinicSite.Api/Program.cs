@@ -1,8 +1,9 @@
-﻿using ClinicSite.Application.Interfaces;
+﻿using ClinicSite.Api.Middleware;
+using ClinicSite.Application.Interfaces;
 using ClinicSite.Application.Interfaces;
 using ClinicSite.Application.Services;
 using ClinicSite.Application.Services;
-using ClinicSite.Infrastructure.Data; 
+using ClinicSite.Infrastructure.Data;
 using ClinicSite.Infrastructure.Seed;
 using CliniqueSite.Application.Services;
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +57,8 @@ using(var scope = app.Services.CreateScope())
 
     await DbSeeder.SeedAsync(context);
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();

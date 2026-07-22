@@ -1,5 +1,6 @@
 ﻿using ClinicSite.Application.Interfaces;
 using ClinicSite.Domain.Entities;
+using ClinicSite.Infrastructure.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicSite.Infrastructure.Data;
@@ -24,5 +25,7 @@ public class AppDbContext : DbContext, IApplicationDbContext
             .HasOne(slot => slot.Booking)
             .WithOne(booking => booking.AppointmentSlot)
             .HasForeignKey<Booking>(booking => booking.AppointmentSlotId);
+
+        modelBuilder.ApplyConfiguration(new SpecialtyConfiguration());
     }
 }
