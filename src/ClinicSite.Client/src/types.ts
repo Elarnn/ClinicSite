@@ -1,3 +1,5 @@
+export type Page = 'home' | 'about' | 'services' | 'contacts' | 'booking';
+
 export interface SpecialtyDto {
   id: string;
   name: string;
