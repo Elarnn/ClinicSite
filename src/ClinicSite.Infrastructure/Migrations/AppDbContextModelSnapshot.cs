@@ -17,7 +17,7 @@ namespace ClinicSite.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.28")
+                .HasAnnotation("ProductVersion", "8.0.29")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -65,17 +65,37 @@ namespace ClinicSite.Infrastructure.Migrations
                     b.Property<Guid>("AppointmentSlotId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CancellationTokenHash")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
                     b.Property<DateTime?>("CancelledAtUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ConfirmationEmailAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ConfirmationEmailSentAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ConfirmationExpiresAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ConfirmationTokenHash")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<DateTime?>("ConfirmedAtUtc")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsCancelled")
-                        .HasColumnType("bit");
+                    b.Property<DateTime?>("LastConfirmationEmailSentAtUtc")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PatientEmail")
                         .IsRequired()
@@ -85,10 +105,21 @@ namespace ClinicSite.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AppointmentSlotId")
-                        .IsUnique();
+                    b.HasIndex("AppointmentSlotId");
+
+                    b.HasIndex("CancellationTokenHash");
+
+                    b.HasIndex("ConfirmationTokenHash");
 
                     b.ToTable("Bookings");
                 });
@@ -154,8 +185,8 @@ namespace ClinicSite.Infrastructure.Migrations
             modelBuilder.Entity("ClinicSite.Domain.Entities.Booking", b =>
                 {
                     b.HasOne("ClinicSite.Domain.Entities.AppointmentSlot", "AppointmentSlot")
-                        .WithOne("Booking")
-                        .HasForeignKey("ClinicSite.Domain.Entities.Booking", "AppointmentSlotId")
+                        .WithMany("Bookings")
+                        .HasForeignKey("AppointmentSlotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -175,7 +206,7 @@ namespace ClinicSite.Infrastructure.Migrations
 
             modelBuilder.Entity("ClinicSite.Domain.Entities.AppointmentSlot", b =>
                 {
-                    b.Navigation("Booking");
+                    b.Navigation("Bookings");
                 });
 
             modelBuilder.Entity("ClinicSite.Domain.Entities.Doctor", b =>

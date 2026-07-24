@@ -21,10 +21,11 @@ interface Props {
 export function SuccessStep({ booking, onBookAgain }: Props) {
   return (
     <div className="success-screen">
-      <div className="success-icon">✅</div>
-      <h2 className="success-title">Booking confirmed!</h2>
+      <div className="success-icon">✉️</div>
+      <h2 className="success-title">Check your email</h2>
       <p className="success-subtitle">
-        We'll see you soon, {booking.patientName.split(' ')[0]}.
+        We've sent an email to <strong>{booking.patientEmail}</strong>. Please confirm your booking
+        within 30 minutes, otherwise the slot will be released.
       </p>
 
       <div className="success-card">
@@ -38,7 +39,7 @@ export function SuccessStep({ booking, onBookAgain }: Props) {
         <div className="success-detail">
           <span className="success-detail-icon">📅</span>
           <div className="success-detail-body">
-            <div className="success-detail-label">Date & Time</div>
+            <div className="success-detail-label">Date & time</div>
             <div className="success-detail-value">
               {formatDateTime(booking.startTimeUtc)} – {formatTime(booking.endTimeUtc)}
             </div>
@@ -51,32 +52,20 @@ export function SuccessStep({ booking, onBookAgain }: Props) {
             <div className="success-detail-value">{booking.patientName}</div>
           </div>
         </div>
-        <div className="success-detail">
-          <span className="success-detail-icon">✉️</span>
-          <div className="success-detail-body">
-            <div className="success-detail-label">Email</div>
-            <div className="success-detail-value">{booking.patientEmail}</div>
-          </div>
-        </div>
         {booking.comment && (
           <div className="success-detail">
             <span className="success-detail-icon">💬</span>
             <div className="success-detail-body">
-              <div className="success-detail-label">Note</div>
+              <div className="success-detail-label">Comment</div>
               <div className="success-detail-value">{booking.comment}</div>
             </div>
           </div>
         )}
-        <div className="success-detail">
-          <span className="success-detail-icon">#</span>
-          <div className="success-detail-body">
-            <div className="success-detail-label">Booking ID</div>
-            <div className="success-detail-value" style={{ fontSize: 12, fontFamily: 'monospace' }}>
-              {booking.bookingId}
-            </div>
-          </div>
-        </div>
       </div>
+
+      <p className="success-hint">
+        Didn't get the email? Check your spam folder or book again.
+      </p>
 
       <button className="btn-ghost" onClick={onBookAgain} style={{ width: '100%' }}>
         Book another appointment

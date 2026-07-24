@@ -1,4 +1,5 @@
 ﻿using ClinicSite.Application.DTOs.Appointments;
+using ClinicSite.Application.Exceptions;
 using ClinicSite.Application.Interfaces;
 using ClinicSite.Domain.Entities;
 using ClinicSite.Domain.Enums;
@@ -52,32 +53,35 @@ namespace ClinicSite.Application.Services
         public async Task<ReserveSlotResultDto> ReserveSlotAsync(Guid slotId)
         {
             var now = DateTime.UtcNow;
-
-            var slot = await _context.AppointmentSlots.FindAsync(slotId);
-
-            if (slot == null) throw new InvalidOperationException("Slot is not available for reservation.");
-
-            if (slot.Status == SlotStatus.Reserved && slot.ReservedUntilUtc.HasValue && slot.ReservedUntilUtc.Value <= now)
-            {
-                slot.Status = SlotStatus.Free;
-                slot.ReservedUntilUtc = null;
-                slot.ReservationToken = null;
-            }
-            if (slot.Status != SlotStatus.Free) throw new InvalidOperationException("Slot is not available for reservation.");
-
             var reservationToken = Guid.NewGuid().ToString("N");
-
             var reservedUntil = now.AddMinutes(10);
 
-            slot.Status = SlotStatus.Reserved;
-            slot.ReservedUntilUtc = reservedUntil;
-            slot.ReservationToken = reservationToken;
+            // Atomic conditional UPDATE: the WHERE clause and the write happen as a single
+            // statement on the database, so two concurrent requests for the same slot can't
+            // both read "Free" and both win — only one UPDATE can match the row at a time.
+            var rowsAffected = await _context.AppointmentSlots
+                .Where(s => s.Id == slotId && (
+                    s.Status == SlotStatus.Free ||
+                    (s.Status == SlotStatus.Reserved && s.ReservedUntilUtc != null && s.ReservedUntilUtc <= now)))
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(s => s.Status, SlotStatus.Reserved)
+                    .SetProperty(s => s.ReservedUntilUtc, reservedUntil)
+                    .SetProperty(s => s.ReservationToken, reservationToken));
 
-            await _context.SaveChangesAsync();
+            if (rowsAffected == 0)
+            {
+                var slotExists = await _context.AppointmentSlots.AnyAsync(s => s.Id == slotId);
+                if (!slotExists)
+                {
+                    throw new InvalidOperationException("Slot is not available for reservation.");
+                }
+
+                throw new ConflictException("Slot is not available for reservation.");
+            }
 
             return new ReserveSlotResultDto
             {
-                SlotId = slot.Id,
+                SlotId = slotId,
                 ReservedUntilUtc = reservedUntil,
                 ReservationToken = reservationToken
             };

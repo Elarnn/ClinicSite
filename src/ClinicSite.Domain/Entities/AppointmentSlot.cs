@@ -22,6 +22,8 @@ namespace ClinicSite.Domain.Entities
 
         public string? ReservationToken { get; set; }
 
-        public Booking? Booking { get; set; }
+        // A slot may accumulate several bookings over its lifetime (e.g. one that expired or was
+        // cancelled, then a new active one). At most one is active (Pending/Confirmed) at a time.
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }

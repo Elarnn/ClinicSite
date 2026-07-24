@@ -19,7 +19,6 @@ const STEP_TITLES: Record<number | string, string> = {
   2: 'Choose a Doctor',
   3: 'Choose a Time',
   4: 'Your Details',
-  done: 'Confirmed',
 };
 
 export function BookingPage() {
@@ -33,23 +32,26 @@ export function BookingPage() {
 
   const title = STEP_TITLES[state.step];
   const stepNum = typeof state.step === 'number' ? state.step : 4;
-  const showBack = state.step !== 1 && state.step !== 'done';
-  const showStepBar = state.step !== 'done';
+  const isDone = state.step === 'done';
+  const showBack = state.step !== 1 && !isDone;
 
   return (
     <section className="booking-shell">
       <div className="booking-card">
-        <header className="booking-header">
-          <div className="booking-header-row">
-            {showBack && (
-              <button className="back-btn" onClick={goBack} aria-label="Go back">
-                ‹
-              </button>
-            )}
-            <h1 className="booking-title">{title}</h1>
-          </div>
-          {showStepBar && <StepBar current={stepNum} total={4} />}
-        </header>
+        {/* The success screen brings its own icon + title, so the sticky wizard header is hidden there. */}
+        {!isDone && (
+          <header className="booking-header">
+            <div className="booking-header-row">
+              {showBack && (
+                <button className="back-btn" onClick={goBack} aria-label="Go back">
+                  ‹
+                </button>
+              )}
+              <h1 className="booking-title">{title}</h1>
+            </div>
+            <StepBar current={stepNum} total={4} />
+          </header>
+        )}
 
         <div className="booking-main">
           {state.step === 1 && (

@@ -18,11 +18,14 @@ export interface AppointmentSlotDto {
   status: SlotStatus;
 }
 
-export enum SlotStatus {
-  Free = 1,
-  Reserved = 2,
-  Booked = 3,
-}
+// Const object instead of a TS enum so the code stays erasable (erasableSyntaxOnly is on).
+export const SlotStatus = {
+  Free: 1,
+  Reserved: 2,
+  Booked: 3,
+} as const;
+
+export type SlotStatus = (typeof SlotStatus)[keyof typeof SlotStatus];
 
 export interface ReserveSlotResultDto {
   slotId: string;
@@ -48,4 +51,33 @@ export interface BookingResultDto {
   startTimeUtc: string;
   endTimeUtc: string;
   createdAtUtc: string;
+  status: string;
+  confirmationExpiresAtUtc?: string | null;
+}
+
+export interface ConfirmBookingResultDto {
+  patientName: string;
+  doctorName: string;
+  specialtyName: string;
+  startTimeUtc: string;
+  endTimeUtc: string;
+  comment?: string | null;
+  status: string;
+}
+
+export interface BookingSummaryDto {
+  doctorName: string;
+  specialtyName: string;
+  startTimeUtc: string;
+  endTimeUtc: string;
+  status: string;
+  cancellable: boolean;
+}
+
+export interface CancelBookingResultDto {
+  doctorName: string;
+  specialtyName: string;
+  startTimeUtc: string;
+  endTimeUtc: string;
+  status: string;
 }

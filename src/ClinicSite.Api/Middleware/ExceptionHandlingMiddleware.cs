@@ -27,9 +27,29 @@ public class ExceptionHandlingMiddleware
         {
             await WriteResponseAsync(context, HttpStatusCode.BadRequest, ex.Message);
         }
+        catch (NotFoundException ex)
+        {
+            await WriteResponseAsync(context, HttpStatusCode.NotFound, ex.Message);
+        }
+        catch (GoneException ex)
+        {
+            await WriteResponseAsync(context, HttpStatusCode.Gone, ex.Message);
+        }
         catch (ConflictException ex)
         {
             await WriteResponseAsync(context, HttpStatusCode.Conflict, ex.Message);
+        }
+        catch (EmailDeliveryException ex)
+        {
+            // The inner cause was already logged where it happened; keep the client message generic.
+            await WriteResponseAsync(context, HttpStatusCode.ServiceUnavailable, ex.Message);
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
+        {
+            await WriteResponseAsync(
+                context,
+                HttpStatusCode.Conflict,
+                "The record was modified by another request. Refresh the page and try again.");
         }
         catch (Exception ex)
         {
@@ -38,7 +58,7 @@ public class ExceptionHandlingMiddleware
             await WriteResponseAsync(
                 context,
                 HttpStatusCode.InternalServerError,
-                "Произошла непредвиденная ошибка сервера.");
+                "An unexpected server error occurred.");
         }
     }
 

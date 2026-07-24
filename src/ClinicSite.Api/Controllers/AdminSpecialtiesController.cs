@@ -17,7 +17,7 @@ public sealed class AdminSpecialtiesController : ControllerBase
     }
 
     /// <summary>
-    /// Получить все специальности.
+    /// Get all specialties.
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyCollection<SpecialtyDto>), StatusCodes.Status200OK)]
@@ -30,7 +30,7 @@ public sealed class AdminSpecialtiesController : ControllerBase
     }
 
     /// <summary>
-    /// Создать специальность.
+    /// Create a specialty.
     /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(SpecialtyDto), StatusCodes.Status201Created)]
@@ -50,7 +50,7 @@ public sealed class AdminSpecialtiesController : ControllerBase
     }
 
     /// <summary>
-    /// Получить специальность по идентификатору.
+    /// Get a specialty by id.
     /// </summary>
     [HttpGet("{specialtyId:guid}")]
     [ProducesResponseType(typeof(SpecialtyDto), StatusCodes.Status200OK)]
@@ -68,7 +68,7 @@ public sealed class AdminSpecialtiesController : ControllerBase
     }
 
     /// <summary>
-    /// Изменить специальность.
+    /// Update a specialty.
     /// </summary>
     [HttpPut("{specialtyId:guid}")]
     [ProducesResponseType(typeof(SpecialtyDto), StatusCodes.Status200OK)]
@@ -90,7 +90,7 @@ public sealed class AdminSpecialtiesController : ControllerBase
     }
 
     /// <summary>
-    /// Удалить специальность.
+    /// Delete a specialty.
     /// </summary>
     [HttpDelete("{specialtyId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -6,7 +6,9 @@ export interface SpecialtyDto {
 export interface DoctorDto {
   id: string;
   fullName: string;
+  specialtyId: string;
   specialtyName: string;
+  isActive: boolean;
 }
 
 export interface BookingResultDto {
@@ -34,6 +36,11 @@ export interface CreateDoctorDto {
   specialtyId: string;
 }
 
+export interface UpdateDoctorDto {
+  fullName: string;
+  specialtyId: string;
+}
+
 export interface AdminBookingDto {
   bookingId: string;
   appointmentSlotId: string;
@@ -42,11 +49,16 @@ export interface AdminBookingDto {
   patientEmail: string;
   comment?: string | null;
 
+  doctorId: string;
   doctorName: string;
+
+  specialtyId: string;
+  specialtyName: string;
 
   startTimeUtc: string;
   endTimeUtc: string;
 
+  status: string;
   isCancelled: boolean;
   createdAtUtc: string;
 }

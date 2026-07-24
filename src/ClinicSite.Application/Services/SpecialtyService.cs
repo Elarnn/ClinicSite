@@ -50,7 +50,7 @@ public class SpecialtyService : ISpecialtyService
         if (string.IsNullOrEmpty(normalizedName))
         {
             throw new ValidationException(
-                "Название специальности не может быть пустым.");
+                "The specialty name cannot be empty.");
         }
 
         var alreadyExists = await _context.Specialties
@@ -59,7 +59,7 @@ public class SpecialtyService : ISpecialtyService
         if (alreadyExists)
         {
             throw new ConflictException(
-                "Специальность с таким названием уже существует.");
+                "A specialty with this name already exists.");
         }
 
         var specialty = new Specialty
@@ -96,7 +96,7 @@ public class SpecialtyService : ISpecialtyService
         if (string.IsNullOrEmpty(normalizedName))
         {
             throw new ValidationException(
-                "Название специальности не может быть пустым.");
+                "The specialty name cannot be empty.");
         }
 
         var alreadyExists = await _context.Specialties
@@ -107,7 +107,7 @@ public class SpecialtyService : ISpecialtyService
         if (alreadyExists)
         {
             throw new ConflictException(
-                "Специальность с таким названием уже существует.");
+                "A specialty with this name already exists.");
         }
 
         specialty.Name = normalizedName;
@@ -137,7 +137,7 @@ public class SpecialtyService : ISpecialtyService
         if (hasDoctors)
         {
             throw new ConflictException(
-                "Нельзя удалить специальность, к которой привязаны врачи.");
+                "Cannot delete a specialty that has doctors assigned to it.");
         }
 
         _context.Specialties.Remove(specialty);

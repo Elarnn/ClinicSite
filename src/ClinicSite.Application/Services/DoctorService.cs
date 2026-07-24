@@ -32,7 +32,24 @@ namespace ClinicSite.Application.Services
                 {
                     Id = d.Id,
                     FullName = d.FullName,
-                    SpecialtyName = d.Specialty.Name
+                    SpecialtyId = d.SpecialtyId,
+                    SpecialtyName = d.Specialty.Name,
+                    IsActive = d.IsActive
+                })
+                .ToListAsync();
+        }
+
+        public async Task<List<DoctorDto>> GetAllDoctorsAsync()
+        {
+            return await _context.Doctors
+                .OrderBy(d => d.FullName)
+                .Select(d => new DoctorDto
+                {
+                    Id = d.Id,
+                    FullName = d.FullName,
+                    SpecialtyId = d.SpecialtyId,
+                    SpecialtyName = d.Specialty.Name,
+                    IsActive = d.IsActive
                 })
                 .ToListAsync();
         }
@@ -43,7 +60,7 @@ namespace ClinicSite.Application.Services
 
             if (string.IsNullOrEmpty(fullName))
             {
-                throw new ValidationException("Имя врача не может быть пустым.");
+                throw new ValidationException("The doctor's name cannot be empty.");
             }
 
             var specialty = await _context.Specialties
@@ -51,7 +68,7 @@ namespace ClinicSite.Application.Services
 
             if (specialty is null)
             {
-                throw new ValidationException("Указанная специальность не найдена.");
+                throw new ValidationException("The specified specialty was not found.");
             }
 
             var doctor = new Doctor
@@ -70,7 +87,110 @@ namespace ClinicSite.Application.Services
             {
                 Id = doctor.Id,
                 FullName = doctor.FullName,
-                SpecialtyName = specialty.Name
+                SpecialtyId = specialty.Id,
+                SpecialtyName = specialty.Name,
+                IsActive = doctor.IsActive
+            };
+        }
+
+        public async Task<DoctorDto?> UpdateDoctorAsync(Guid doctorId, UpdateDoctorDto request)
+        {
+            var doctor = await _context.Doctors
+                .FirstOrDefaultAsync(d => d.Id == doctorId);
+
+            if (doctor is null)
+            {
+                return null;
+            }
+
+            var fullName = request.FullName.Trim();
+
+            if (string.IsNullOrEmpty(fullName))
+            {
+                throw new ValidationException("The doctor's name cannot be empty.");
+            }
+
+            var specialty = await _context.Specialties
+                .FirstOrDefaultAsync(s => s.Id == request.SpecialtyId);
+
+            if (specialty is null)
+            {
+                throw new ValidationException("The specified specialty was not found.");
+            }
+
+            doctor.FullName = fullName;
+            doctor.SpecialtyId = specialty.Id;
+
+            await _context.SaveChangesAsync();
+
+            return new DoctorDto
+            {
+                Id = doctor.Id,
+                FullName = doctor.FullName,
+                SpecialtyId = specialty.Id,
+                SpecialtyName = specialty.Name,
+                IsActive = doctor.IsActive
+            };
+        }
+
+        public async Task<DoctorDto?> DeactivateDoctorAsync(Guid doctorId)
+        {
+            return await SetActiveAsync(doctorId, isActive: false);
+        }
+
+        public async Task<DoctorDto?> ActivateDoctorAsync(Guid doctorId)
+        {
+            return await SetActiveAsync(doctorId, isActive: true);
+        }
+
+        public async Task<bool> DeleteDoctorAsync(Guid doctorId)
+        {
+            var doctor = await _context.Doctors
+                .FirstOrDefaultAsync(d => d.Id == doctorId);
+
+            if (doctor is null)
+            {
+                return false;
+            }
+
+            var hasSlots = await _context.AppointmentSlots
+                .AnyAsync(s => s.DoctorId == doctorId);
+
+            if (hasSlots)
+            {
+                throw new ConflictException(
+                    "Cannot delete a doctor who has appointment slots. Deactivate the doctor first.");
+            }
+
+            _context.Doctors.Remove(doctor);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        private async Task<DoctorDto?> SetActiveAsync(Guid doctorId, bool isActive)
+        {
+            var doctor = await _context.Doctors
+                .Include(d => d.Specialty)
+                .FirstOrDefaultAsync(d => d.Id == doctorId);
+
+            if (doctor is null)
+            {
+                return null;
+            }
+
+            doctor.IsActive = isActive;
+
+            await _context.SaveChangesAsync();
+
+            return new DoctorDto
+            {
+                Id = doctor.Id,
+                FullName = doctor.FullName,
+                SpecialtyId = doctor.SpecialtyId,
+                SpecialtyName = doctor.Specialty.Name,
+                IsActive = doctor.IsActive
             };
         }
     }

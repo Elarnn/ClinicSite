@@ -201,6 +201,103 @@
 }
 
 /* ===========================
+   Accordion — specialty > doctor grouping (Bookings page)
+=========================== */
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.accordion-item {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.accordion-header,
+.accordion-subheader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.accordion-header:hover,
+.accordion-subheader:hover {
+  background: #f9fafb;
+}
+
+.accordion-chevron {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  font-size: 16px;
+  color: #6b7280;
+  transform: rotate(0deg);
+  transition: transform 0.15s ease;
+}
+
+.accordion-chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.accordion-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accordion-meta {
+  flex-shrink: 0;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.accordion-body {
+  border-top: 1px solid #e5e7eb;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fafafa;
+}
+
+.accordion-subitem {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.accordion-subheader {
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.accordion-subitem .table-scroll {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  border-radius: 0;
+}
+
+/* ===========================
    Dashboard stat cards
 =========================== */
 .cards-grid {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import type { Page } from './types';
 import { Navbar } from './components/Navbar';
@@ -8,9 +8,37 @@ import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { ContactsPage } from './pages/ContactsPage';
 import { BookingPage } from './pages/BookingPage';
+import { ConfirmBookingPage } from './pages/ConfirmBookingPage';
+import { CancelBookingPage } from './pages/CancelBookingPage';
+
+type Route = 'site' | 'confirm' | 'cancel';
+
+function currentRoute(): Route {
+  const path = window.location.pathname;
+  if (path === '/booking/confirm') return 'confirm';
+  if (path === '/booking/cancel') return 'cancel';
+  return 'site';
+}
 
 export default function App() {
+  const [route, setRoute] = useState<Route>(currentRoute);
   const [page, setPage] = useState<Page>('home');
+
+  useEffect(() => {
+    const onPopState = () => setRoute(currentRoute());
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  const goHome = () => {
+    window.history.pushState({}, '', '/');
+    setRoute('site');
+    setPage('home');
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  };
+
+  if (route === 'confirm') return <ConfirmBookingPage onHome={goHome} />;
+  if (route === 'cancel') return <CancelBookingPage onHome={goHome} />;
 
   const navigate = (next: Page) => {
     setPage(next);
