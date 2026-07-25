@@ -4,7 +4,7 @@ namespace ClinicSite.Application.Interfaces;
 
 /// <summary>
 /// Transactional e-mail notifications for the booking flow. Implemented in the Infrastructure layer
-/// (currently via the Brevo HTTP API). The abstraction is intentionally free of any provider type.
+/// (currently over SMTP via MailKit). The abstraction is intentionally free of any provider type.
 ///
 /// The raw confirmation / cancellation tokens are passed in so the implementation can build the
 /// public links; implementations MUST NOT log the tokens or the resulting URLs.
@@ -19,4 +19,10 @@ public interface IEmailService
 
     /// <summary>Optional courtesy e-mail sent when a confirmed booking is cancelled.</summary>
     Task SendBookingCancelledAsync(BookingEmailModel model, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Invitation e-mail for a new doctor account, containing a one-time link to set a password.
+    /// The raw invite token is passed in so the implementation can build the link; it MUST NOT be logged.
+    /// </summary>
+    Task SendDoctorInviteAsync(string doctorName, string toEmail, string inviteToken, CancellationToken cancellationToken = default);
 }

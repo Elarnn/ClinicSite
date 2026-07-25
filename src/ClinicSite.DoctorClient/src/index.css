@@ -1,0 +1,159 @@
+:root {
+  --teal: #0f766e;
+  --teal-dark: #0b5a54;
+  --ink: #1f2937;
+  --ink-muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #f3f4f6;
+  --surface: #ffffff;
+  --danger: #b91c1c;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color: var(--ink);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  min-height: 100vh;
+}
+
+/* ---------- Auth (login / set-password) ---------- */
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-card {
+  background: var(--surface);
+  width: 100%;
+  max-width: 400px;
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 10px 40px rgba(15, 118, 110, 0.08);
+  text-align: center;
+}
+
+.brand {
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 0.02em;
+  margin-bottom: 20px;
+}
+.brand span { color: var(--ink-muted); font-weight: 500; }
+
+.auth-title { font-size: 24px; margin: 8px 0; }
+.auth-subtitle { color: var(--ink-muted); font-size: 14px; margin-bottom: 24px; }
+
+form { text-align: left; }
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 14px 0 6px;
+}
+
+.field-input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  outline: none;
+}
+.field-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12); }
+
+.field-error {
+  color: var(--danger);
+  font-size: 13px;
+  margin: 12px 0 0;
+}
+
+.btn-primary {
+  width: 100%;
+  margin-top: 22px;
+  padding: 12px 18px;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-primary:hover:not(:disabled) { background: var(--teal-dark); }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.status-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 16px;
+  background: #ecfdf5;
+}
+.status-icon.warning { background: #fffbeb; }
+.status-icon.error { background: #fef2f2; }
+
+/* ---------- Portal (bookings) ---------- */
+.portal { min-height: 100vh; }
+
+.portal-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.portal-header .brand { margin-bottom: 0; }
+.portal-header-right { display: flex; align-items: center; gap: 14px; }
+.portal-user { font-weight: 600; font-size: 14px; }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--ink);
+}
+.btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+
+.portal-main { max-width: 1000px; margin: 0 auto; padding: 28px 24px 60px; }
+.page-title { font-size: 22px; margin: 0 0 4px; }
+.page-subtitle { color: var(--ink-muted); font-size: 14px; margin: 0 0 22px; }
+.muted { color: var(--ink-muted); }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.data-table th, .data-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.data-table th { background: #f9fafb; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-muted); }
+.data-table tr:last-child td { border-bottom: none; }
+.comment-cell { white-space: normal; max-width: 220px; color: var(--ink-muted); }
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #eef2f7;
+  color: var(--ink-muted);
+}
+.badge-confirmed { background: #ecfdf5; color: #047857; }
+.badge-pendingconfirmation { background: #fffbeb; color: #b45309; }
+.badge-cancelled { background: #fef2f2; color: var(--danger); }
+.badge-expired { background: #f3f4f6; color: #6b7280; }
+
+.empty { text-align: center; color: var(--ink-muted); padding: 48px 0; }
+.empty-icon { font-size: 44px; margin-bottom: 10px; }

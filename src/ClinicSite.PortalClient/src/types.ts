@@ -9,6 +9,12 @@ export interface DoctorDto {
   specialtyId: string;
   specialtyName: string;
   isActive: boolean;
+  email?: string | null;
+  accountStatus: string; // "None" | "Invited" | "Active"
+}
+
+export interface InviteDoctorDto {
+  email: string;
 }
 
 export interface BookingResultDto {

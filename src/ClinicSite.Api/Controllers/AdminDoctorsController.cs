@@ -9,10 +9,12 @@ namespace ClinicSite.Api.Controllers;
 public sealed class AdminDoctorsController : ControllerBase
 {
     private readonly IDoctorService _doctorService;
+    private readonly IDoctorAccountService _doctorAccountService;
 
-    public AdminDoctorsController(IDoctorService doctorService)
+    public AdminDoctorsController(IDoctorService doctorService, IDoctorAccountService doctorAccountService)
     {
         _doctorService = doctorService;
+        _doctorAccountService = doctorAccountService;
     }
 
     /// <summary>
@@ -57,6 +59,24 @@ public sealed class AdminDoctorsController : ControllerBase
         return doctor is null
             ? NotFound()
             : Ok(doctor);
+    }
+
+    /// <summary>
+    /// Bind an email to a doctor and send an account-setup invitation.
+    /// </summary>
+    [HttpPost("{doctorId:guid}/invite")]
+    [ProducesResponseType(typeof(DoctorDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<ActionResult<DoctorDto>> Invite(
+        Guid doctorId,
+        [FromBody] InviteDoctorDto request,
+        CancellationToken cancellationToken)
+    {
+        var doctor = await _doctorAccountService.InviteAsync(doctorId, request.Email, cancellationToken);
+        return Ok(doctor);
     }
 
     /// <summary>

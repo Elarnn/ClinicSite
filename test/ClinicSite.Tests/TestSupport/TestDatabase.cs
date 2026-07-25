@@ -44,6 +44,35 @@ public sealed class TestDatabase : IDisposable
         return new BookingService(context, email, options, NullLogger<BookingService>.Instance);
     }
 
+    public DoctorAccountService CreateDoctorAccountService(AppDbContext context, IEmailService email) =>
+        new DoctorAccountService(context, email, NullLogger<DoctorAccountService>.Instance);
+
+    /// <summary>Seeds a doctor with no account and returns its id.</summary>
+    public Guid SeedDoctor(string fullName = "Dr. Smith")
+    {
+        using var context = CreateContext();
+        var specialty = new Specialty { Name = "Cardiology" };
+        var doctor = new Doctor { FullName = fullName, Specialty = specialty };
+        context.Doctors.Add(doctor);
+        context.SaveChanges();
+        return doctor.Id;
+    }
+
+    public Doctor GetDoctor(Guid doctorId)
+    {
+        using var context = CreateContext();
+        return context.Doctors.AsNoTracking().Single(d => d.Id == doctorId);
+    }
+
+    /// <summary>Forces the single doctor's invite window into the past.</summary>
+    public void ExpireDoctorInvite(Guid doctorId)
+    {
+        using var context = CreateContext();
+        var doctor = context.Doctors.Single(d => d.Id == doctorId);
+        doctor.InviteTokenExpiresAtUtc = DateTime.UtcNow.AddMinutes(-1);
+        context.SaveChanges();
+    }
+
     /// <summary>Seeds a single reserved slot ready to be booked and returns its id + reservation token.</summary>
     public (Guid SlotId, string ReservationToken) SeedReservedSlot(DateTime? startTimeUtc = null)
     {

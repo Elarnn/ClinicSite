@@ -13,5 +13,11 @@ namespace ClinicSite.Application.DTOs.Doctors
         public Guid SpecialtyId { get; set; }
         public string SpecialtyName { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+
+        /// <summary>Bound login email, or null if the doctor has no account yet.</summary>
+        public string? Email { get; set; }
+
+        /// <summary>Account lifecycle as a string: "None", "Invited", or "Active".</summary>
+        public string AccountStatus { get; set; } = "None";
     }
 }

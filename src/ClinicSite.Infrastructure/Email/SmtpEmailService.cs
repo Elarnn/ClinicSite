@@ -66,6 +66,19 @@ public class SmtpEmailService : IEmailService
             cancellationToken);
     }
 
+    public Task SendDoctorInviteAsync(string doctorName, string toEmail, string inviteToken, CancellationToken cancellationToken = default)
+    {
+        var setPasswordUrl = BuildDoctorUrl("set-password", inviteToken);
+        return SendAsync(
+            toEmail,
+            doctorName,
+            EmailTemplates.DoctorInviteSubject,
+            EmailTemplates.DoctorInviteHtml(doctorName, setPasswordUrl),
+            EmailTemplates.DoctorInviteText(doctorName, setPasswordUrl),
+            "doctor-invite",
+            cancellationToken);
+    }
+
     private async Task SendAsync(
         string toEmail,
         string toName,
@@ -118,6 +131,12 @@ public class SmtpEmailService : IEmailService
     private string BuildUrl(string path, string token)
     {
         var baseUrl = _options.ClientBaseUrl.TrimEnd('/');
+        return $"{baseUrl}/{path}?token={Uri.EscapeDataString(token)}";
+    }
+
+    private string BuildDoctorUrl(string path, string token)
+    {
+        var baseUrl = _options.DoctorClientBaseUrl.TrimEnd('/');
         return $"{baseUrl}/{path}?token={Uri.EscapeDataString(token)}";
     }
 

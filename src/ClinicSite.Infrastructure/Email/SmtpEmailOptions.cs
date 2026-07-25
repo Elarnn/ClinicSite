@@ -34,6 +34,9 @@ public class SmtpEmailOptions
     /// <summary>Public base URL of the patient site, used to build confirmation / cancellation links.</summary>
     public string ClientBaseUrl { get; set; } = "http://localhost:5173";
 
+    /// <summary>Public base URL of the doctor portal, used to build the account-invite (set-password) link.</summary>
+    public string DoctorClientBaseUrl { get; set; } = "http://localhost:5175";
+
     /// <summary>Confirmation-link lifetime in minutes (shown in the first e-mail).</summary>
     public int ConfirmationLifetimeMinutes { get; set; } = 30;
 

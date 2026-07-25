@@ -54,6 +54,25 @@ public class AppDbContext : DbContext, IApplicationDbContext
             }
         });
 
+        modelBuilder.Entity<Doctor>(doctor =>
+        {
+            doctor.Property(d => d.AccountStatus).HasConversion<int>();
+            doctor.Property(d => d.Email).HasMaxLength(256);
+            doctor.Property(d => d.PasswordHash).HasMaxLength(256);
+            doctor.Property(d => d.InviteTokenHash).HasMaxLength(128);
+
+            // At most one account per email. NULL emails (doctors without an account) are exempt: on
+            // SQL Server a filtered unique index allows many NULLs; other providers (SQLite in tests)
+            // treat NULLs as distinct already, so the filter is only needed on SQL Server.
+            var emailIndex = doctor.HasIndex(d => d.Email).IsUnique();
+            if (Database.IsSqlServer())
+            {
+                emailIndex.HasFilter("[Email] IS NOT NULL");
+            }
+
+            doctor.HasIndex(d => d.InviteTokenHash);
+        });
+
         modelBuilder.ApplyConfiguration(new SpecialtyConfiguration());
     }
 }

@@ -5,7 +5,7 @@ using ClinicSite.Application.Notifications;
 namespace ClinicSite.Tests.TestSupport;
 
 /// <summary>
-/// In-memory <see cref="IEmailService"/> for tests: it never contacts Brevo, records the raw tokens
+/// In-memory <see cref="IEmailService"/> for tests: it never sends real e-mail, records the raw tokens
 /// it is handed, and can be told to fail a specific send to exercise the error paths.
 /// </summary>
 public sealed class FakeEmailService : IEmailService
@@ -13,13 +13,17 @@ public sealed class FakeEmailService : IEmailService
     public int ConfirmationRequestCount { get; private set; }
     public int ConfirmedCount { get; private set; }
     public int CancelledCount { get; private set; }
+    public int DoctorInviteCount { get; private set; }
 
     public string? LastConfirmationToken { get; private set; }
     public string? LastCancellationToken { get; private set; }
+    public string? LastInviteToken { get; private set; }
+    public string? LastInviteEmail { get; private set; }
     public BookingEmailModel? LastConfirmationModel { get; private set; }
 
     public bool ThrowOnConfirmationRequest { get; set; }
     public bool ThrowOnConfirmed { get; set; }
+    public bool ThrowOnDoctorInvite { get; set; }
 
     public Task SendConfirmationRequestAsync(BookingEmailModel model, string confirmationToken, CancellationToken cancellationToken = default)
     {
@@ -51,6 +55,20 @@ public sealed class FakeEmailService : IEmailService
     public Task SendBookingCancelledAsync(BookingEmailModel model, CancellationToken cancellationToken = default)
     {
         CancelledCount++;
+        return Task.CompletedTask;
+    }
+
+    public Task SendDoctorInviteAsync(string doctorName, string toEmail, string inviteToken, CancellationToken cancellationToken = default)
+    {
+        DoctorInviteCount++;
+        LastInviteToken = inviteToken;
+        LastInviteEmail = toEmail;
+
+        if (ThrowOnDoctorInvite)
+        {
+            throw new EmailDeliveryException("Simulated invite-email failure.");
+        }
+
         return Task.CompletedTask;
     }
 }

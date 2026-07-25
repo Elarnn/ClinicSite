@@ -16,6 +16,46 @@ internal static class EmailTemplates
     public const string ConfirmationRequestSubject = "Confirm your ClinicSite appointment";
     public const string ConfirmedSubject = "Your ClinicSite appointment is confirmed";
     public const string CancelledSubject = "Your ClinicSite appointment has been cancelled";
+    public const string DoctorInviteSubject = "Set up your ClinicSite doctor account";
+
+    // --- Doctor account invitation -----------------------------------------------------------
+
+    public static string DoctorInviteHtml(string doctorName, string setPasswordUrl)
+    {
+        var name = Enc(doctorName);
+        return $$"""
+        <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#1f2937">
+          <h2 style="color:#0f766e">Welcome, {{name}}!</h2>
+          <p>An account has been created for you in the ClinicSite doctor portal. Set your password to activate it.</p>
+          <p style="margin:24px 0">
+            <a href="{{Attr(setPasswordUrl)}}"
+               style="background:#0f766e;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:8px;font-weight:bold;display:inline-block">
+              Set your password
+            </a>
+          </p>
+          <p style="color:#6b7280;font-size:14px">
+            This link is valid for 48 hours. If the button doesn't work, open this link manually:<br>
+            <a href="{{Attr(setPasswordUrl)}}" style="color:#0f766e;word-break:break-all">{{Enc(setPasswordUrl)}}</a>
+          </p>
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
+          <p style="color:#9ca3af;font-size:12px">
+            If you weren't expecting this invitation, you can safely ignore this e-mail.
+          </p>
+        </div>
+        """;
+    }
+
+    public static string DoctorInviteText(string doctorName, string setPasswordUrl)
+    {
+        return
+$@"Welcome, {doctorName}!
+
+An account has been created for you in the ClinicSite doctor portal. Set your password to activate it (link valid for 48 hours):
+
+{setPasswordUrl}
+
+If you weren't expecting this invitation, you can safely ignore this e-mail.";
+    }
 
     // --- First e-mail: please confirm --------------------------------------------------------
 

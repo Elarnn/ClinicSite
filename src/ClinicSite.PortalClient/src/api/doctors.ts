@@ -1,5 +1,5 @@
 import { apiDelete, apiGet, apiPost, apiPut } from './http';
-import type { CreateDoctorDto, DoctorDto, UpdateDoctorDto } from '../types';
+import type { CreateDoctorDto, DoctorDto, InviteDoctorDto, UpdateDoctorDto } from '../types';
 
 export function getDoctors() {
   return apiGet<DoctorDto[]>('/doctors');
@@ -27,4 +27,8 @@ export function activateDoctor(id: string) {
 
 export function deleteDoctor(id: string) {
   return apiDelete(`/admin/doctors/${id}`);
+}
+
+export function inviteDoctor(id: string, email: string) {
+  return apiPost<DoctorDto, InviteDoctorDto>(`/admin/doctors/${id}/invite`, { email });
 }

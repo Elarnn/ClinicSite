@@ -41,6 +41,7 @@ namespace ClinicSite.Application.Services
 
         public async Task<List<DoctorDto>> GetAllDoctorsAsync()
         {
+            // Admin view: includes account email + status. (The public GetDoctorsAsync omits these.)
             return await _context.Doctors
                 .OrderBy(d => d.FullName)
                 .Select(d => new DoctorDto
@@ -49,7 +50,9 @@ namespace ClinicSite.Application.Services
                     FullName = d.FullName,
                     SpecialtyId = d.SpecialtyId,
                     SpecialtyName = d.Specialty.Name,
-                    IsActive = d.IsActive
+                    IsActive = d.IsActive,
+                    Email = d.Email,
+                    AccountStatus = d.AccountStatus.ToString()
                 })
                 .ToListAsync();
         }
@@ -89,7 +92,9 @@ namespace ClinicSite.Application.Services
                 FullName = doctor.FullName,
                 SpecialtyId = specialty.Id,
                 SpecialtyName = specialty.Name,
-                IsActive = doctor.IsActive
+                IsActive = doctor.IsActive,
+                Email = doctor.Email,
+                AccountStatus = doctor.AccountStatus.ToString()
             };
         }
 
@@ -129,7 +134,9 @@ namespace ClinicSite.Application.Services
                 FullName = doctor.FullName,
                 SpecialtyId = specialty.Id,
                 SpecialtyName = specialty.Name,
-                IsActive = doctor.IsActive
+                IsActive = doctor.IsActive,
+                Email = doctor.Email,
+                AccountStatus = doctor.AccountStatus.ToString()
             };
         }
 
@@ -190,7 +197,9 @@ namespace ClinicSite.Application.Services
                 FullName = doctor.FullName,
                 SpecialtyId = doctor.SpecialtyId,
                 SpecialtyName = doctor.Specialty.Name,
-                IsActive = doctor.IsActive
+                IsActive = doctor.IsActive,
+                Email = doctor.Email,
+                AccountStatus = doctor.AccountStatus.ToString()
             };
         }
     }

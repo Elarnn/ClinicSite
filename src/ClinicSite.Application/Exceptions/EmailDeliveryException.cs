@@ -1,7 +1,7 @@
 namespace ClinicSite.Application.Exceptions;
 
 /// <summary>
-/// Raised when a transactional e-mail could not be delivered (Brevo failure or missing configuration).
+/// Raised when a transactional e-mail could not be delivered (SMTP failure or missing configuration).
 /// Maps to HTTP 503. The message is safe to show to the client and never contains secrets or tokens.
 /// </summary>
 public class EmailDeliveryException : Exception

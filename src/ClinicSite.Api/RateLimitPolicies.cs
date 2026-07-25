@@ -5,4 +5,5 @@ public static class RateLimitPolicies
 {
     public const string CreateBooking = "create-booking";
     public const string ConfirmCancel = "confirm-cancel";
+    public const string DoctorLogin = "doctor-login";
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { activateDoctor, createDoctor, deactivateDoctor, deleteDoctor, getAdminDoctors, updateDoctor } from '../api/doctors';
+import { activateDoctor, createDoctor, deactivateDoctor, deleteDoctor, getAdminDoctors, inviteDoctor, updateDoctor } from '../api/doctors';
 import { getSpecialties } from '../api/specialties';
 import type { DoctorDto, SpecialtyDto } from '../types';
 
@@ -20,6 +20,12 @@ export function DoctorsPage() {
   const [editSpecialtyId, setEditSpecialtyId] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
+
+  // Account invitation (bind an email + send the set-password link).
+  const [inviteId, setInviteId] = useState<string | null>(null);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteBusy, setInviteBusy] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([getAdminDoctors(), getSpecialties()])
@@ -115,6 +121,35 @@ export function DoctorsPage() {
       .finally(() => setBusyId(null));
   }
 
+  function startInvite(doctor: DoctorDto) {
+    setInviteId(doctor.id);
+    setInviteEmail(doctor.email ?? '');
+    setInviteError(null);
+  }
+
+  function cancelInvite() {
+    setInviteId(null);
+    setInviteEmail('');
+    setInviteError(null);
+  }
+
+  function submitInvite(doctor: DoctorDto) {
+    const email = inviteEmail.trim();
+    if (!email || inviteBusy) return;
+
+    setInviteBusy(true);
+    setInviteError(null);
+    inviteDoctor(doctor.id, email)
+      .then((updated) => {
+        setDoctors((prev) => prev.map((d) => (d.id === doctor.id ? updated : d)));
+        cancelInvite();
+      })
+      .catch((e: unknown) => {
+        setInviteError(e instanceof Error ? e.message : 'Failed to send invitation');
+      })
+      .finally(() => setInviteBusy(false));
+  }
+
   if (loading) return <p>Loading doctors...</p>;
   if (error) return <p className="error-text">{error}</p>;
 
@@ -183,6 +218,7 @@ export function DoctorsPage() {
                 <th>Full name</th>
                 <th>Specialty</th>
                 <th>Status</th>
+                <th>Account</th>
                 <th className="table-actions">Actions</th>
               </tr>
             </thead>
@@ -216,6 +252,7 @@ export function DoctorsPage() {
                         </select>
                       </td>
                       <td>{doctor.isActive ? 'Active' : 'Inactive'}</td>
+                      <td>{doctor.accountStatus === 'None' ? 'No account' : doctor.accountStatus}</td>
                       <td className="table-actions">
                         <button
                           className="small-button"
@@ -238,6 +275,54 @@ export function DoctorsPage() {
                       <td>{doctor.fullName}</td>
                       <td>{doctor.specialtyName}</td>
                       <td>{doctor.isActive ? 'Active' : 'Inactive'}</td>
+                      <td>
+                        {inviteId === doctor.id ? (
+                          <div className="invite-editor">
+                            <input
+                              className="text-input"
+                              type="email"
+                              placeholder="doctor@email.com"
+                              value={inviteEmail}
+                              onChange={(e) => setInviteEmail(e.target.value)}
+                              disabled={inviteBusy}
+                              autoFocus
+                            />
+                            <div className="invite-editor-actions">
+                              <button
+                                className="small-button"
+                                onClick={() => submitInvite(doctor)}
+                                disabled={inviteBusy || !inviteEmail.trim()}
+                              >
+                                {inviteBusy ? '…' : 'Send'}
+                              </button>
+                              <button className="small-button" onClick={cancelInvite} disabled={inviteBusy}>
+                                Cancel
+                              </button>
+                            </div>
+                            {inviteError && <p className="error-text">{inviteError}</p>}
+                          </div>
+                        ) : doctor.accountStatus === 'Active' ? (
+                          <div>
+                            <span className="account-badge active">Active</span>
+                            <div className="account-email">{doctor.email}</div>
+                          </div>
+                        ) : doctor.accountStatus === 'Invited' ? (
+                          <div>
+                            <span className="account-badge invited">Invited</span>
+                            <div className="account-email">{doctor.email}</div>
+                            <button className="small-button" onClick={() => startInvite(doctor)}>
+                              Resend
+                            </button>
+                          </div>
+                        ) : (
+                          <div>
+                            <span className="account-badge none">No account</span>
+                            <button className="small-button" onClick={() => startInvite(doctor)}>
+                              Invite
+                            </button>
+                          </div>
+                        )}
+                      </td>
                       <td className="table-actions">
                         <button
                           className="small-button"

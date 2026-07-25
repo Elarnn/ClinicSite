@@ -22,8 +22,11 @@ namespace ClinicSite.Application.Services
         }
         public async Task<List<AppointmentSlotDto>> GetFreeByDoctorAsync(Guid doctorId)
         {
+            var now = DateTime.UtcNow;
+
+            // Only slots that are still in the future — a past slot can't be booked.
             return await _context.AppointmentSlots
-                .Where(s => s.DoctorId == doctorId && s.Status == SlotStatus.Free)
+                .Where(s => s.DoctorId == doctorId && s.Status == SlotStatus.Free && s.StartTimeUtc > now)
                 .Select(s => new AppointmentSlotDto
                 {
                     SlotId = s.Id,
@@ -37,8 +40,11 @@ namespace ClinicSite.Application.Services
 
         public async Task<List<AppointmentSlotDto>> GetAllByDoctorAsync(Guid doctorId)
         {
+            var now = DateTime.UtcNow;
+
+            // The public time-picker calls this; hide slots whose start time has already passed.
             return await _context.AppointmentSlots
-                .Where(s => s.DoctorId == doctorId)
+                .Where(s => s.DoctorId == doctorId && s.StartTimeUtc > now)
                 .Select(s => new AppointmentSlotDto
                 {
                     SlotId = s.Id,
@@ -60,7 +66,7 @@ namespace ClinicSite.Application.Services
             // statement on the database, so two concurrent requests for the same slot can't
             // both read "Free" and both win — only one UPDATE can match the row at a time.
             var rowsAffected = await _context.AppointmentSlots
-                .Where(s => s.Id == slotId && (
+                .Where(s => s.Id == slotId && s.StartTimeUtc > now && (
                     s.Status == SlotStatus.Free ||
                     (s.Status == SlotStatus.Reserved && s.ReservedUntilUtc != null && s.ReservedUntilUtc <= now)))
                 .ExecuteUpdateAsync(setters => setters

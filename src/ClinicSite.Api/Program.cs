@@ -1,3 +1,6 @@
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.RateLimiting;
 using ClinicSite.Api;
 using ClinicSite.Api.BackgroundServices;
@@ -5,12 +8,15 @@ using ClinicSite.Api.Middleware;
 using ClinicSite.Application.Common;
 using ClinicSite.Application.Interfaces;
 using ClinicSite.Application.Services;
+using ClinicSite.Infrastructure.Auth;
 using ClinicSite.Infrastructure.Data;
 using ClinicSite.Infrastructure.Email;
 using ClinicSite.Infrastructure.Seed;
 using CliniqueSite.Application.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +29,7 @@ builder.Services.AddCors(options =>
 		policy
 			.WithOrigins(
 				"http://localhost:5173",
-				"http://localhost:5174"
+				"http://localhost:5174", "http://localhost:5175"
 			)
 			.AllowAnyHeader()
 			.AllowAnyMethod();
@@ -53,8 +59,42 @@ builder.Services.Configure<SmtpEmailOptions>(
 // never from appsettings.json.
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
+// --- Doctor authentication (JWT bearer) ---
+var jwtSection = builder.Configuration.GetSection(JwtOptions.SectionName);
+builder.Services.Configure<JwtOptions>(jwtSection);
+var jwtOptions = jwtSection.Get<JwtOptions>() ?? new JwtOptions();
+
+// Use the configured signing key when present; otherwise fall back to an ephemeral key so the app
+// still starts. Doctor login then fails with a clear error (see JwtTokenService) until Jwt:Key is set,
+// while the rest of the API (public booking) keeps working.
+var signingKeyMaterial = !string.IsNullOrWhiteSpace(jwtOptions.Key) && jwtOptions.Key.Length >= 32
+    ? jwtOptions.Key
+    : Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwtOptions.Audience,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKeyMaterial)),
+            NameClaimType = ClaimTypes.Name,
+            RoleClaimType = ClaimTypes.Role,
+            ClockSkew = TimeSpan.FromSeconds(30)
+        };
+    });
+builder.Services.AddAuthorization();
+builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
+
 builder.Services.AddScoped<ISpecialtyService, SpecialtyService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IDoctorAccountService, DoctorAccountService>();
+builder.Services.AddScoped<IDoctorBookingService, DoctorBookingService>();
 builder.Services.AddScoped<IAppointmentSlotService, AppointmentSlotService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IAdminBookingService, AdminBookingService>();
@@ -87,6 +127,17 @@ builder.Services.AddRateLimiter(options =>
                 Window = TimeSpan.FromMinutes(1),
                 QueueLimit = 0
             }));
+
+    // Throttle doctor login attempts per IP to slow credential-stuffing.
+    options.AddPolicy(RateLimitPolicies.DoctorLogin, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
 });
 
 var app = builder.Build();
@@ -112,6 +163,8 @@ app.UseRouting();
 app.UseCors("ReactClients");
 
 app.UseRateLimiter();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

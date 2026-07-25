@@ -410,3 +410,25 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* ---------- Doctor account column ---------- */
+.account-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.account-badge.active { background: #ecfdf5; color: #047857; }
+.account-badge.invited { background: #fffbeb; color: #b45309; }
+.account-badge.none { background: #f3f4f6; color: #6b7280; }
+
+.account-email {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 4px 0 6px;
+  word-break: break-all;
+}
+
+.invite-editor { display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
+.invite-editor-actions { display: flex; gap: 6px; }
