@@ -150,6 +150,12 @@ using(var scope = app.Services.CreateScope())
     await context.Database.MigrateAsync();
 
     await DbSeeder.SeedAsync(context);
+
+    // Manual-testing fixtures (patient history, a demo doctor login). Development only — never in Production.
+    if (app.Environment.IsDevelopment())
+    {
+        await DevSeeder.SeedAsync(context);
+    }
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

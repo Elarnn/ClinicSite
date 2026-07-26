@@ -193,16 +193,22 @@ public class DoctorBookingService : IDoctorBookingService
 
     public async Task<List<PatientHistoryItemDto>> GetPatientHistoryAsync(Guid doctorId, Guid bookingId, CancellationToken cancellationToken = default)
     {
+        // Access is granted by the booking the doctor opened the history from: it must be theirs.
+        // Once past that gate the history spans every doctor the patient has seen — a clinic-wide
+        // record is the point of the feature.
         var booking = await LoadOwnedBookingAsync(doctorId, bookingId, cancellationToken);
+
+        // Bookings carry no patient entity; the e-mail is the identity, compared trimmed + lower-cased
+        // so "PATIENT@example.com" and " patient@example.com " are the same person.
         var email = booking.PatientEmail.Trim().ToLower();
 
         return await _context.Bookings.AsNoTracking()
-            .Where(b => b.Id != booking.Id
-                && b.Status != BookingStatus.Expired
-                && b.PatientEmail.ToLower() == email)
+            .Where(b => b.Status != BookingStatus.Expired
+                && b.PatientEmail.Trim().ToLower() == email)
             .OrderByDescending(b => b.AppointmentSlot.StartTimeUtc)
             .Select(b => new PatientHistoryItemDto
             {
+                BookingId = b.Id,
                 StartTimeUtc = b.AppointmentSlot.StartTimeUtc,
                 EndTimeUtc = b.AppointmentSlot.EndTimeUtc,
                 DoctorName = b.AppointmentSlot.Doctor.FullName,

@@ -25,7 +25,11 @@ public interface IDoctorBookingService
     /// <summary>Saves the doctor's private note. Returns the stored value (null when cleared).</summary>
     Task<string?> UpdateNoteAsync(Guid doctorId, Guid bookingId, string? note, CancellationToken cancellationToken = default);
 
-    /// <summary>Other bookings for the same patient (matched by e-mail, case-insensitive), newest first.</summary>
+    /// <summary>
+    /// The patient's bookings across the whole clinic, newest first. The patient is identified by the
+    /// e-mail on <paramref name="bookingId"/>, compared trimmed and case-insensitively; that booking
+    /// must belong to <paramref name="doctorId"/> (404 otherwise) and is itself part of the result.
+    /// </summary>
     Task<List<PatientHistoryItemDto>> GetPatientHistoryAsync(Guid doctorId, Guid bookingId, CancellationToken cancellationToken = default);
 
     /// <summary>Sends a free-form message to the booking's patient e-mail.</summary>

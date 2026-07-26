@@ -112,6 +112,50 @@ public sealed class TestDatabase : IDisposable
         return (doctor.Id, slot.Id);
     }
 
+    /// <summary>Creates a doctor (with their own specialty) and returns the id — for multi-doctor scenarios.</summary>
+    public Guid SeedDoctorWithSpecialty(string doctorName, string specialtyName)
+    {
+        using var context = CreateContext();
+        var doctor = new Doctor { FullName = doctorName, Specialty = GetOrCreateSpecialty(context, specialtyName) };
+        context.Doctors.Add(doctor);
+        context.SaveChanges();
+        return doctor.Id;
+    }
+
+    /// <summary>Adds a booked slot + booking to an existing doctor and returns the booking id.</summary>
+    public Guid AddBooking(
+        Guid doctorId,
+        DateTime startTimeUtc,
+        string patientEmail,
+        string patientName = "Pat Patient",
+        BookingStatus bookingStatus = BookingStatus.Confirmed,
+        AppointmentStatus appointmentStatus = AppointmentStatus.Scheduled)
+    {
+        using var context = CreateContext();
+
+        var slot = new AppointmentSlot
+        {
+            DoctorId = doctorId,
+            StartTimeUtc = startTimeUtc,
+            EndTimeUtc = startTimeUtc.AddMinutes(30),
+            Status = SlotStatus.Booked
+        };
+        var booking = new Booking
+        {
+            AppointmentSlot = slot,
+            PatientName = patientName,
+            PatientEmail = patientEmail,
+            Status = bookingStatus,
+            AppointmentStatus = appointmentStatus
+        };
+
+        context.AppointmentSlots.Add(slot);
+        context.Bookings.Add(booking);
+        context.SaveChanges();
+
+        return booking.Id;
+    }
+
     /// <summary>Adds another free slot to an existing doctor at the given time and returns its id.</summary>
     public Guid AddFreeSlot(Guid doctorId, DateTime startTimeUtc)
     {

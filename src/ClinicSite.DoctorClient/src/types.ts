@@ -60,6 +60,7 @@ export interface Paged<T> {
 }
 
 export interface PatientHistoryItem {
+  bookingId: string;
   startTimeUtc: string;
   endTimeUtc: string;
   doctorName: string;

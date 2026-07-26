@@ -79,20 +79,7 @@ public class DoctorBookingServiceTests
         }
     }
 
-    [Fact]
-    public async Task PatientHistory_matches_email_case_insensitively()
-    {
-        using var db = new TestDatabase();
-        var (doctorId, _, bookingId) = db.SeedBooking(patientEmail: "Pat@Example.com");
-        db.SeedBooking(patientEmail: "pat@example.COM", startTimeUtc: DateTime.UtcNow.AddDays(-3)); // same patient, other case/doctor
-
-        using var ctx = db.CreateContext();
-        var service = db.CreateDoctorBookingService(ctx, new FakeEmailService());
-
-        var history = await service.GetPatientHistoryAsync(doctorId, bookingId);
-
-        Assert.Single(history); // the other booking, matched despite different case
-    }
+    // Patient history lives in its own suite — see DoctorPatientHistoryTests.
 
     [Fact]
     public async Task GetBookings_filters_by_status_and_search()

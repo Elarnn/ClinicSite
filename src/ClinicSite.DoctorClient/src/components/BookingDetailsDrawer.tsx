@@ -136,7 +136,7 @@ export function BookingDetailsDrawer({ booking, onClose, onChanged }: Props) {
 
           <section>
             <h4>Patient history</h4>
-            <PatientHistory items={history} error={historyError} />
+            <PatientHistory items={history} error={historyError} currentBookingId={booking.bookingId} />
           </section>
 
           {error && <p className="field-error">{error}</p>}
