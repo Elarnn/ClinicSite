@@ -55,10 +55,22 @@ export async function apiGet<T>(url: string): Promise<T> {
 }
 
 export async function apiPost<TResponse, TBody>(url: string, body: TBody): Promise<TResponse> {
+  return apiSend<TResponse, TBody>('POST', url, body);
+}
+
+export async function apiPut<TResponse, TBody>(url: string, body: TBody): Promise<TResponse> {
+  return apiSend<TResponse, TBody>('PUT', url, body);
+}
+
+export async function apiPatch<TResponse, TBody>(url: string, body: TBody): Promise<TResponse> {
+  return apiSend<TResponse, TBody>('PATCH', url, body);
+}
+
+async function apiSend<TResponse, TBody>(method: string, url: string, body: TBody): Promise<TResponse> {
   const response = await fetch(`${API_BASE_URL}${url}`, {
-    method: 'POST',
+    method,
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: body === null ? undefined : JSON.stringify(body),
+    body: body === null || body === undefined ? undefined : JSON.stringify(body),
   });
-  return handle<TResponse>(response, `POST ${url} failed: ${response.status}`);
+  return handle<TResponse>(response, `${method} ${url} failed: ${response.status}`);
 }

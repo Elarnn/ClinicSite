@@ -9,6 +9,7 @@ export interface DoctorDto {
   id: string;
   fullName: string;
   specialtyName: string;
+  hasPhoto: boolean;
 }
 
 export interface AppointmentSlotDto {

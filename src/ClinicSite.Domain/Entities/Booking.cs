@@ -16,8 +16,14 @@ namespace ClinicSite.Domain.Entities
 
         public string? Comment { get; set; }
 
-        // Lifecycle state of the booking. Replaces the old boolean IsCancelled flag.
+        // Lifecycle state of the booking (e-mail confirmation flow). Replaces the old IsCancelled flag.
         public BookingStatus Status { get; set; } = BookingStatus.PendingConfirmation;
+
+        // Visit outcome, managed by the doctor in the doctor portal. Separate from Status above.
+        public AppointmentStatus AppointmentStatus { get; set; } = AppointmentStatus.Scheduled;
+
+        // Private note written by the doctor (not shown to the patient).
+        public string? DoctorNote { get; set; }
 
         // --- Email confirmation ---
         // Only the SHA-256 hash of the confirmation token is ever stored (never the raw token).

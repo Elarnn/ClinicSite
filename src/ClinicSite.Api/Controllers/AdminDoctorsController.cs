@@ -80,6 +80,36 @@ public sealed class AdminDoctorsController : ControllerBase
     }
 
     /// <summary>
+    /// Upload (or replace) a doctor's profile photo. Multipart form-data with a single "file" field.
+    /// </summary>
+    [HttpPost("{doctorId:guid}/photo")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UploadPhoto(Guid doctorId, IFormFile file)
+    {
+        if (file is null || file.Length == 0)
+        {
+            return BadRequest(new { message = "No file was uploaded." });
+        }
+
+        using var stream = new MemoryStream();
+        await file.CopyToAsync(stream);
+        await _doctorService.SetPhotoAsync(doctorId, stream.ToArray(), file.ContentType);
+        return NoContent();
+    }
+
+    /// <summary>Remove a doctor's photo (the public site then shows a placeholder).</summary>
+    [HttpDelete("{doctorId:guid}/photo")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemovePhoto(Guid doctorId)
+    {
+        await _doctorService.RemovePhotoAsync(doctorId);
+        return NoContent();
+    }
+
+    /// <summary>
     /// Deactivate a doctor.
     /// </summary>
     [HttpPost("{doctorId:guid}/deactivate")]

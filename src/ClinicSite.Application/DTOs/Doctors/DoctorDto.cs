@@ -14,6 +14,9 @@ namespace ClinicSite.Application.DTOs.Doctors
         public string SpecialtyName { get; set; } = string.Empty;
         public bool IsActive { get; set; }
 
+        /// <summary>Whether a profile photo has been uploaded (fetch it from /api/doctors/{id}/photo).</summary>
+        public bool HasPhoto { get; set; }
+
         /// <summary>Bound login email, or null if the doctor has no account yet.</summary>
         public string? Email { get; set; }
 

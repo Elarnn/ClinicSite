@@ -164,6 +164,36 @@ Hello, {m.PatientName}! Your appointment has been cancelled.
 You can book a new appointment on ClinicSite at any time.";
     }
 
+    // --- Doctor -> patient free-form message -------------------------------------------------
+
+    public static string PatientMessageHtml(string patientName, string message)
+    {
+        var name = Enc(patientName);
+        // Encode first, then turn newlines into <br> so the doctor's line breaks survive.
+        var body = Enc(message).Replace("\r\n", "\n").Replace("\n", "<br>");
+        return $$"""
+        <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#1f2937">
+          <h2 style="color:#0f766e">Hello, {{name}}!</h2>
+          <p>You have a message from ClinicSite regarding your appointment:</p>
+          <div style="background:#f9fafb;border-radius:12px;padding:16px;margin:16px 0;white-space:normal">{{body}}</div>
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
+          <p style="color:#9ca3af;font-size:12px">This message was sent by your clinic through ClinicSite.</p>
+        </div>
+        """;
+    }
+
+    public static string PatientMessageText(string patientName, string message)
+    {
+        return
+$@"Hello, {patientName}!
+
+You have a message from ClinicSite regarding your appointment:
+
+{message}
+
+— Sent by your clinic through ClinicSite.";
+    }
+
     // --- shared rendering --------------------------------------------------------------------
 
     private static string DetailsTable(BookingEmailModel m)

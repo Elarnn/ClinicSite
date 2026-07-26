@@ -65,6 +65,9 @@ namespace ClinicSite.Infrastructure.Migrations
                     b.Property<Guid>("AppointmentSlotId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("AppointmentStatus")
+                        .HasColumnType("int");
+
                     b.Property<string>("CancellationTokenHash")
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
@@ -93,6 +96,10 @@ namespace ClinicSite.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("DoctorNote")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<DateTime?>("LastConfirmationEmailSentAtUtc")
                         .HasColumnType("datetime2");
@@ -157,6 +164,13 @@ namespace ClinicSite.Infrastructure.Migrations
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<byte[]>("Photo")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("PhotoContentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("SpecialtyId")
                         .HasColumnType("uniqueidentifier");

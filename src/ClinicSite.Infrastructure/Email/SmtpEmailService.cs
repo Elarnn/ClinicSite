@@ -79,6 +79,18 @@ public class SmtpEmailService : IEmailService
             cancellationToken);
     }
 
+    public Task SendPatientMessageAsync(string toEmail, string patientName, string subject, string message, CancellationToken cancellationToken = default)
+    {
+        return SendAsync(
+            toEmail,
+            patientName,
+            subject,
+            EmailTemplates.PatientMessageHtml(patientName, message),
+            EmailTemplates.PatientMessageText(patientName, message),
+            "patient-message",
+            cancellationToken);
+    }
+
     private async Task SendAsync(
         string toEmail,
         string toName,

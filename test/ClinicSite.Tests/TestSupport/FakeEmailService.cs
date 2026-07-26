@@ -14,16 +14,21 @@ public sealed class FakeEmailService : IEmailService
     public int ConfirmedCount { get; private set; }
     public int CancelledCount { get; private set; }
     public int DoctorInviteCount { get; private set; }
+    public int PatientMessageCount { get; private set; }
 
     public string? LastConfirmationToken { get; private set; }
     public string? LastCancellationToken { get; private set; }
     public string? LastInviteToken { get; private set; }
     public string? LastInviteEmail { get; private set; }
+    public string? LastMessageEmail { get; private set; }
+    public string? LastMessageSubject { get; private set; }
+    public string? LastMessageBody { get; private set; }
     public BookingEmailModel? LastConfirmationModel { get; private set; }
 
     public bool ThrowOnConfirmationRequest { get; set; }
     public bool ThrowOnConfirmed { get; set; }
     public bool ThrowOnDoctorInvite { get; set; }
+    public bool ThrowOnPatientMessage { get; set; }
 
     public Task SendConfirmationRequestAsync(BookingEmailModel model, string confirmationToken, CancellationToken cancellationToken = default)
     {
@@ -67,6 +72,21 @@ public sealed class FakeEmailService : IEmailService
         if (ThrowOnDoctorInvite)
         {
             throw new EmailDeliveryException("Simulated invite-email failure.");
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task SendPatientMessageAsync(string toEmail, string patientName, string subject, string message, CancellationToken cancellationToken = default)
+    {
+        PatientMessageCount++;
+        LastMessageEmail = toEmail;
+        LastMessageSubject = subject;
+        LastMessageBody = message;
+
+        if (ThrowOnPatientMessage)
+        {
+            throw new EmailDeliveryException("Simulated patient-message failure.");
         }
 
         return Task.CompletedTask;

@@ -9,6 +9,7 @@ export interface DoctorDto {
   specialtyId: string;
   specialtyName: string;
   isActive: boolean;
+  hasPhoto: boolean;
   email?: string | null;
   accountStatus: string; // "None" | "Invited" | "Active"
 }

@@ -22,5 +22,11 @@ namespace ClinicSite.Application.Interfaces
         Task<DoctorDto?> ActivateDoctorAsync(Guid doctorId);
 
         Task<bool> DeleteDoctorAsync(Guid doctorId);
+
+        Task SetPhotoAsync(Guid doctorId, byte[] data, string contentType);
+
+        Task<DoctorPhoto?> GetPhotoAsync(Guid doctorId);
+
+        Task RemovePhotoAsync(Guid doctorId);
     }
 }

@@ -1,7 +1,28 @@
 import { useEffect, useState } from 'react';
-import { activateDoctor, createDoctor, deactivateDoctor, deleteDoctor, getAdminDoctors, inviteDoctor, updateDoctor } from '../api/doctors';
+import {
+  activateDoctor,
+  createDoctor,
+  deactivateDoctor,
+  deleteDoctor,
+  doctorPhotoUrl,
+  getAdminDoctors,
+  inviteDoctor,
+  removeDoctorPhoto,
+  updateDoctor,
+  uploadDoctorPhoto,
+} from '../api/doctors';
 import { getSpecialties } from '../api/specialties';
 import type { DoctorDto, SpecialtyDto } from '../types';
+
+function initials(fullName: string): string {
+  return fullName
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}
 
 export function DoctorsPage() {
   const [doctors, setDoctors] = useState<DoctorDto[]>([]);
@@ -20,6 +41,8 @@ export function DoctorsPage() {
   const [editSpecialtyId, setEditSpecialtyId] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rowError, setRowError] = useState<string | null>(null);
+  // Bumped after a photo upload/remove so thumbnails bypass the browser cache.
+  const [photoVersion, setPhotoVersion] = useState(0);
 
   // Account invitation (bind an email + send the set-password link).
   const [inviteId, setInviteId] = useState<string | null>(null);
@@ -150,6 +173,73 @@ export function DoctorsPage() {
       .finally(() => setInviteBusy(false));
   }
 
+  function handlePhotoSelected(doctor: DoctorDto, e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow re-selecting the same file later
+    if (!file) return;
+
+    setBusyId(doctor.id);
+    setRowError(null);
+    uploadDoctorPhoto(doctor.id, file)
+      .then(() => {
+        setDoctors((prev) => prev.map((d) => (d.id === doctor.id ? { ...d, hasPhoto: true } : d)));
+        setPhotoVersion((v) => v + 1);
+      })
+      .catch((err: unknown) => setRowError(err instanceof Error ? err.message : 'Failed to upload photo'))
+      .finally(() => setBusyId(null));
+  }
+
+  function handleRemovePhoto(doctor: DoctorDto) {
+    if (!window.confirm(`Remove ${doctor.fullName}'s photo?`)) return;
+
+    setBusyId(doctor.id);
+    setRowError(null);
+    removeDoctorPhoto(doctor.id)
+      .then(() => {
+        setDoctors((prev) => prev.map((d) => (d.id === doctor.id ? { ...d, hasPhoto: false } : d)));
+        setPhotoVersion((v) => v + 1);
+      })
+      .catch((err: unknown) => setRowError(err instanceof Error ? err.message : 'Failed to remove photo'))
+      .finally(() => setBusyId(null));
+  }
+
+  function photoCell(doctor: DoctorDto, controls: boolean) {
+    return (
+      <td>
+        <div className="photo-cell">
+          {doctor.hasPhoto ? (
+            <img className="photo-thumb" src={`${doctorPhotoUrl(doctor.id)}?v=${photoVersion}`} alt="" />
+          ) : (
+            <span className="photo-thumb placeholder">{initials(doctor.fullName)}</span>
+          )}
+          {controls && (
+            <div className="photo-actions">
+              <label className={`small-button${busyId === doctor.id ? ' disabled' : ''}`}>
+                {doctor.hasPhoto ? 'Change' : 'Upload'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  disabled={busyId === doctor.id}
+                  onChange={(e) => handlePhotoSelected(doctor, e)}
+                />
+              </label>
+              {doctor.hasPhoto && (
+                <button
+                  className="small-button danger"
+                  disabled={busyId === doctor.id}
+                  onClick={() => handleRemovePhoto(doctor)}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </td>
+    );
+  }
+
   if (loading) return <p>Loading doctors...</p>;
   if (error) return <p className="error-text">{error}</p>;
 
@@ -215,6 +305,7 @@ export function DoctorsPage() {
           <table className="data-table">
             <thead>
               <tr>
+                <th>Photo</th>
                 <th>Full name</th>
                 <th>Specialty</th>
                 <th>Status</th>
@@ -228,6 +319,7 @@ export function DoctorsPage() {
                 <tr key={doctor.id}>
                   {editingId === doctor.id ? (
                     <>
+                      {photoCell(doctor, false)}
                       <td>
                         <input
                           className="text-input"
@@ -272,6 +364,7 @@ export function DoctorsPage() {
                     </>
                   ) : (
                     <>
+                      {photoCell(doctor, true)}
                       <td>{doctor.fullName}</td>
                       <td>{doctor.specialtyName}</td>
                       <td>{doctor.isActive ? 'Active' : 'Inactive'}</td>

@@ -157,3 +157,114 @@ form { text-align: left; }
 
 .empty { text-align: center; color: var(--ink-muted); padding: 48px 0; }
 .empty-icon { font-size: 44px; margin-bottom: 10px; }
+
+/* ---------- Dashboard: tabs, cards, sections ---------- */
+.mode-tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+.mode-tab { background: transparent; border: 1px solid var(--border); border-radius: 999px; padding: 7px 18px; font-size: 14px; cursor: pointer; color: var(--ink-muted); }
+.mode-tab.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+.stat-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-muted); }
+.stat-card strong { font-size: 26px; }
+
+.section-head { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 12px; }
+.section-head h4 { margin: 0; }
+.btn-ghost.small, .btn-primary.small { padding: 6px 12px; font-size: 13px; width: auto; margin-top: 0; }
+
+/* ---------- Schedule (Today) ---------- */
+.schedule { display: flex; flex-direction: column; gap: 8px; }
+.schedule-row { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: 12px; padding: 12px 16px; }
+.schedule-row.booked { border-left-color: var(--teal); }
+.schedule-row.free { border-left-color: #cbd5e1; opacity: 0.9; }
+.schedule-row.blocked { border-left-color: #9ca3af; background: #f9fafb; }
+.schedule-row.next { box-shadow: 0 0 0 2px rgba(15,118,110,0.25); }
+.schedule-time { display: flex; flex-direction: column; font-weight: 600; font-size: 14px; min-width: 64px; }
+.schedule-time span { font-weight: 400; font-size: 12px; color: var(--ink-muted); }
+.schedule-main { flex: 1; min-width: 0; }
+.schedule-open { background: none; border: none; text-align: left; cursor: pointer; padding: 0; display: flex; flex-direction: column; width: 100%; }
+.schedule-patient { font-weight: 600; }
+.schedule-email { font-size: 12px; color: var(--ink-muted); }
+.schedule-free-label { color: var(--ink-muted); font-size: 14px; }
+.schedule-side { display: flex; align-items: center; gap: 8px; }
+.next-badge { font-size: 11px; font-weight: 700; color: var(--teal); text-transform: uppercase; }
+.mini-btn { background: transparent; border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+.mini-btn:hover:not(:disabled) { border-color: var(--teal); color: var(--teal); }
+
+/* ---------- Status badges ---------- */
+.badge-scheduled { background: #eef2ff; color: #4338ca; }
+.badge-checkedin { background: #ecfeff; color: #0e7490; }
+.badge-inprogress { background: #fffbeb; color: #b45309; }
+.badge-completed { background: #ecfdf5; color: #047857; }
+.badge-noshow { background: #fef2f2; color: #b91c1c; }
+.badge-cancelled { background: #f3f4f6; color: #6b7280; }
+
+/* ---------- Status actions ---------- */
+.status-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.status-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 7px 14px; font-size: 13px; cursor: pointer; }
+.status-btn:hover:not(:disabled) { border-color: var(--teal); }
+.status-btn.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+.status-btn:disabled { opacity: 0.55; cursor: default; }
+
+/* ---------- Note editor ---------- */
+.note-editor { display: flex; flex-direction: column; gap: 8px; }
+.note-textarea { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font: inherit; resize: vertical; }
+.note-footer { display: flex; align-items: center; justify-content: space-between; }
+
+/* ---------- Drawer ---------- */
+.drawer-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.35); display: flex; justify-content: flex-end; z-index: 50; }
+.drawer { width: min(460px, 100%); height: 100%; background: var(--surface); box-shadow: -8px 0 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; }
+.drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border); }
+.drawer-head h2 { margin: 0; font-size: 20px; }
+.drawer-close { background: none; border: none; font-size: 26px; line-height: 1; cursor: pointer; color: var(--ink-muted); }
+.drawer-body { padding: 18px 22px; overflow-y: auto; }
+.drawer-body section { padding: 14px 0; border-bottom: 1px solid var(--border); }
+.drawer-body section:last-child { border-bottom: none; }
+.drawer-body h4 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-muted); }
+.kv { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; font-size: 14px; }
+.kv span { color: var(--ink-muted); }
+.readonly-block { background: #f9fafb; border-radius: 10px; padding: 10px 12px; margin: 0; font-size: 14px; white-space: pre-wrap; }
+
+/* ---------- Patient history ---------- */
+.history-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.history-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #f9fafb; border-radius: 10px; padding: 8px 12px; }
+.history-when { font-weight: 600; font-size: 13px; }
+.history-who { font-size: 12px; color: var(--ink-muted); }
+
+/* ---------- Modal ---------- */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.45); display: flex; align-items: center; justify-content: center; z-index: 60; padding: 20px; }
+.modal { background: var(--surface); border-radius: 16px; padding: 24px; width: min(480px, 100%); max-height: 90vh; overflow-y: auto; }
+.modal h3 { margin: 0 0 14px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.modal-actions .btn-ghost, .modal-actions .btn-primary { width: auto; margin-top: 0; }
+
+/* ---------- Week grid ---------- */
+.week-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.week-col { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px; }
+.week-col-head { font-weight: 600; font-size: 13px; margin-bottom: 8px; text-align: center; }
+.week-item { display: flex; flex-direction: column; gap: 2px; padding: 8px; border-radius: 8px; margin-bottom: 6px; background: #f9fafb; font-size: 12px; }
+.week-item.booked { background: #ecfdf5; cursor: pointer; }
+.week-item.blocked { background: #f3f4f6; color: #6b7280; }
+.week-time { font-weight: 600; }
+
+/* ---------- Slots + filters + pager ---------- */
+.slots-manager { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px; }
+.slots-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
+.slots-field { display: flex; flex-direction: column; }
+.slots-field.grow { flex: 1; min-width: 180px; }
+.slots-row .btn-primary, .slots-row .btn-ghost, .filters .btn-primary { width: auto; margin-top: 0; }
+.filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-bottom: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+.data-table tr.clickable { cursor: pointer; }
+.data-table tr.clickable:hover td { background: #f9fafb; }
+.pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 16px; }
+
+/* Week item block/unblock */
+.week-item-top { display: flex; flex-direction: column; gap: 2px; }
+.week-item.booked .week-item-top { cursor: pointer; }
+.week-item .mini-btn { align-self: flex-start; margin-top: 4px; }
+
+/* Icon buttons (block / unblock) */
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; border: 1px solid var(--border); border-radius: 8px; background: transparent; cursor: pointer; color: var(--ink-muted); }
+.icon-btn:hover:not(:disabled) { border-color: var(--teal); color: var(--teal); }
+.icon-btn.block:hover:not(:disabled) { border-color: var(--danger); color: var(--danger); }
+.icon-btn:disabled { opacity: 0.5; cursor: default; }

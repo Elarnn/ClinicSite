@@ -34,7 +34,8 @@ namespace ClinicSite.Application.Services
                     FullName = d.FullName,
                     SpecialtyId = d.SpecialtyId,
                     SpecialtyName = d.Specialty.Name,
-                    IsActive = d.IsActive
+                    IsActive = d.IsActive,
+                    HasPhoto = d.Photo != null
                 })
                 .ToListAsync();
         }
@@ -51,6 +52,7 @@ namespace ClinicSite.Application.Services
                     SpecialtyId = d.SpecialtyId,
                     SpecialtyName = d.Specialty.Name,
                     IsActive = d.IsActive,
+                    HasPhoto = d.Photo != null,
                     Email = d.Email,
                     AccountStatus = d.AccountStatus.ToString()
                 })
@@ -93,6 +95,7 @@ namespace ClinicSite.Application.Services
                 SpecialtyId = specialty.Id,
                 SpecialtyName = specialty.Name,
                 IsActive = doctor.IsActive,
+                HasPhoto = doctor.Photo != null,
                 Email = doctor.Email,
                 AccountStatus = doctor.AccountStatus.ToString()
             };
@@ -135,6 +138,7 @@ namespace ClinicSite.Application.Services
                 SpecialtyId = specialty.Id,
                 SpecialtyName = specialty.Name,
                 IsActive = doctor.IsActive,
+                HasPhoto = doctor.Photo != null,
                 Email = doctor.Email,
                 AccountStatus = doctor.AccountStatus.ToString()
             };
@@ -176,6 +180,67 @@ namespace ClinicSite.Application.Services
             return true;
         }
 
+        private const int MaxPhotoBytes = 3 * 1024 * 1024; // 3 MB
+
+        private static readonly HashSet<string> AllowedPhotoTypes =
+            new(StringComparer.OrdinalIgnoreCase) { "image/jpeg", "image/png", "image/webp", "image/gif" };
+
+        public async Task SetPhotoAsync(Guid doctorId, byte[] data, string contentType)
+        {
+            if (data is null || data.Length == 0)
+            {
+                throw new ValidationException("No image was provided.");
+            }
+            if (data.Length > MaxPhotoBytes)
+            {
+                throw new ValidationException("Image is too large (maximum 3 MB).");
+            }
+            if (string.IsNullOrWhiteSpace(contentType) || !AllowedPhotoTypes.Contains(contentType))
+            {
+                throw new ValidationException("Unsupported image type. Use JPEG, PNG, WebP or GIF.");
+            }
+
+            var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.Id == doctorId);
+            if (doctor is null)
+            {
+                throw new NotFoundException("Doctor not found.");
+            }
+
+            doctor.Photo = data;
+            doctor.PhotoContentType = contentType;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<DoctorPhoto?> GetPhotoAsync(Guid doctorId)
+        {
+            // Load the blob only for this one doctor (never in the list/detail projections).
+            var row = await _context.Doctors
+                .AsNoTracking()
+                .Where(d => d.Id == doctorId && d.Photo != null)
+                .Select(d => new { d.Photo, d.PhotoContentType })
+                .FirstOrDefaultAsync();
+
+            if (row?.Photo is null)
+            {
+                return null;
+            }
+
+            return new DoctorPhoto(row.Photo, row.PhotoContentType ?? "application/octet-stream");
+        }
+
+        public async Task RemovePhotoAsync(Guid doctorId)
+        {
+            var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.Id == doctorId);
+            if (doctor is null)
+            {
+                throw new NotFoundException("Doctor not found.");
+            }
+
+            doctor.Photo = null;
+            doctor.PhotoContentType = null;
+            await _context.SaveChangesAsync();
+        }
+
         private async Task<DoctorDto?> SetActiveAsync(Guid doctorId, bool isActive)
         {
             var doctor = await _context.Doctors
@@ -198,6 +263,7 @@ namespace ClinicSite.Application.Services
                 SpecialtyId = doctor.SpecialtyId,
                 SpecialtyName = doctor.Specialty.Name,
                 IsActive = doctor.IsActive,
+                HasPhoto = doctor.Photo != null,
                 Email = doctor.Email,
                 AccountStatus = doctor.AccountStatus.ToString()
             };

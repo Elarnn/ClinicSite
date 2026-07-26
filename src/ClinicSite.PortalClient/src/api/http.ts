@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://localhost:7100/api';
+export const API_BASE_URL = 'https://localhost:7100/api';
 
 async function toError(response: Response, fallback: string): Promise<Error> {
   const text = await response.text().catch(() => '');

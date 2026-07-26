@@ -95,6 +95,7 @@ builder.Services.AddScoped<ISpecialtyService, SpecialtyService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IDoctorAccountService, DoctorAccountService>();
 builder.Services.AddScoped<IDoctorBookingService, DoctorBookingService>();
+builder.Services.AddScoped<IDoctorSlotService, DoctorSlotService>();
 builder.Services.AddScoped<IAppointmentSlotService, AppointmentSlotService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IAdminBookingService, AdminBookingService>();

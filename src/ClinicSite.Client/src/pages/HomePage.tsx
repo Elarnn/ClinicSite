@@ -1,4 +1,5 @@
 import type { Page } from '../types';
+import { DoctorsTeam } from '../components/DoctorsTeam';
 
 interface Props {
   onNavigate: (page: Page) => void;
@@ -60,6 +61,8 @@ export function HomePage({ onNavigate }: Props) {
           </div>
         </div>
       </section>
+
+      <DoctorsTeam />
 
       <section className="cta-banner">
         <div className="cta-banner-inner">

@@ -432,3 +432,12 @@
 
 .invite-editor { display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
 .invite-editor-actions { display: flex; gap: 6px; }
+
+/* ---------- Doctor photo cell ---------- */
+.photo-cell { display: flex; align-items: center; gap: 10px; }
+.photo-thumb { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border, #e5e7eb); }
+.photo-thumb.placeholder { display: inline-flex; align-items: center; justify-content: center; background: #eef2f7; color: #6b7280; font-size: 13px; font-weight: 700; }
+.photo-actions { display: flex; flex-direction: column; gap: 4px; }
+.small-button.disabled { opacity: 0.5; pointer-events: none; }
+.small-button { cursor: pointer; }
+label.small-button input[type="file"] { display: none; }

@@ -4,7 +4,7 @@ import type { DoctorSession } from './auth/session';
 import { UNAUTHORIZED_EVENT } from './api/http';
 import { LoginPage } from './pages/LoginPage';
 import { SetPasswordPage } from './pages/SetPasswordPage';
-import { BookingsPage } from './pages/BookingsPage';
+import { DoctorDashboardPage } from './pages/DoctorDashboardPage';
 
 export default function App() {
   const [session, setSession] = useState<DoctorSession | null>(getSession());
@@ -41,5 +41,5 @@ export default function App() {
     return <LoginPage onLoggedIn={setSession} />;
   }
 
-  return <BookingsPage session={session} onLogout={handleLogout} />;
+  return <DoctorDashboardPage session={session} onLogout={handleLogout} />;
 }

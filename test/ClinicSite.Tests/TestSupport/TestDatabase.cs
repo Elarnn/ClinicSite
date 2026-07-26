@@ -47,6 +47,91 @@ public sealed class TestDatabase : IDisposable
     public DoctorAccountService CreateDoctorAccountService(AppDbContext context, IEmailService email) =>
         new DoctorAccountService(context, email, NullLogger<DoctorAccountService>.Instance);
 
+    public DoctorBookingService CreateDoctorBookingService(AppDbContext context, IEmailService email) =>
+        new DoctorBookingService(context, email);
+
+    public DoctorSlotService CreateDoctorSlotService(AppDbContext context) =>
+        new DoctorSlotService(context);
+
+    /// <summary>Seeds a doctor with a booked slot + a booking, and returns the ids.</summary>
+    public (Guid DoctorId, Guid SlotId, Guid BookingId) SeedBooking(
+        string patientEmail = "patient@example.com",
+        string patientName = "Pat Patient",
+        DateTime? startTimeUtc = null,
+        BookingStatus bookingStatus = BookingStatus.Confirmed,
+        AppointmentStatus appointmentStatus = AppointmentStatus.Scheduled,
+        string doctorName = "Dr. Smith",
+        string? patientComment = null)
+    {
+        using var context = CreateContext();
+
+        var start = startTimeUtc ?? DateTime.UtcNow.AddDays(1);
+        var doctor = new Doctor { FullName = doctorName, Specialty = GetOrCreateSpecialty(context) };
+        var slot = new AppointmentSlot
+        {
+            Doctor = doctor,
+            StartTimeUtc = start,
+            EndTimeUtc = start.AddMinutes(30),
+            Status = SlotStatus.Booked
+        };
+        var booking = new Booking
+        {
+            AppointmentSlot = slot,
+            PatientName = patientName,
+            PatientEmail = patientEmail,
+            Comment = patientComment,
+            Status = bookingStatus,
+            AppointmentStatus = appointmentStatus
+        };
+
+        context.AppointmentSlots.Add(slot);
+        context.Bookings.Add(booking);
+        context.SaveChanges();
+
+        return (doctor.Id, slot.Id, booking.Id);
+    }
+
+    /// <summary>Seeds a doctor with a single free slot and returns the ids.</summary>
+    public (Guid DoctorId, Guid SlotId) SeedFreeSlot(DateTime? startTimeUtc = null)
+    {
+        using var context = CreateContext();
+
+        var start = startTimeUtc ?? DateTime.UtcNow.AddDays(1);
+        var doctor = new Doctor { FullName = "Dr. Smith", Specialty = GetOrCreateSpecialty(context) };
+        var slot = new AppointmentSlot
+        {
+            Doctor = doctor,
+            StartTimeUtc = start,
+            EndTimeUtc = start.AddMinutes(30),
+            Status = SlotStatus.Free
+        };
+
+        context.AppointmentSlots.Add(slot);
+        context.SaveChanges();
+
+        return (doctor.Id, slot.Id);
+    }
+
+    /// <summary>Adds another free slot to an existing doctor at the given time and returns its id.</summary>
+    public Guid AddFreeSlot(Guid doctorId, DateTime startTimeUtc)
+    {
+        using var context = CreateContext();
+        var slot = new AppointmentSlot
+        {
+            DoctorId = doctorId,
+            StartTimeUtc = startTimeUtc,
+            EndTimeUtc = startTimeUtc.AddMinutes(30),
+            Status = SlotStatus.Free
+        };
+        context.AppointmentSlots.Add(slot);
+        context.SaveChanges();
+        return slot.Id;
+    }
+
+    // Reuses the seeded specialty when present so multiple seeds don't collide on the unique name index.
+    private static Specialty GetOrCreateSpecialty(AppDbContext context, string name = "Cardiology") =>
+        context.Specialties.FirstOrDefault(s => s.Name == name) ?? new Specialty { Name = name };
+
     /// <summary>Seeds a doctor with no account and returns its id.</summary>
     public Guid SeedDoctor(string fullName = "Dr. Smith")
     {

@@ -42,9 +42,10 @@ namespace ClinicSite.Application.Services
         {
             var now = DateTime.UtcNow;
 
-            // The public time-picker calls this; hide slots whose start time has already passed.
+            // The public time-picker calls this; hide slots whose start time has already passed and
+            // slots the doctor has blocked (Blocked slots must never be offered to patients).
             return await _context.AppointmentSlots
-                .Where(s => s.DoctorId == doctorId && s.StartTimeUtc > now)
+                .Where(s => s.DoctorId == doctorId && s.StartTimeUtc > now && s.Status != SlotStatus.Blocked)
                 .Select(s => new AppointmentSlotDto
                 {
                     SlotId = s.Id,

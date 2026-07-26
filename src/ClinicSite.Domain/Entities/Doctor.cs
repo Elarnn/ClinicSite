@@ -17,6 +17,11 @@ namespace ClinicSite.Domain.Entities
 
         public bool IsActive { get; set; } = true;
 
+        // --- Profile photo (uploaded by an admin, shown on the public site). Small headshots only,
+        // stored inline; queries that only need doctor details use projections and never load these. ---
+        public byte[]? Photo { get; set; }
+        public string? PhotoContentType { get; set; }
+
         // --- Login account (bound by an admin, activated by the doctor via an invite link) ---
 
         /// <summary>Login email. Null until an admin invites the doctor. Unique across doctors.</summary>

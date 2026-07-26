@@ -25,4 +25,10 @@ public interface IEmailService
     /// The raw invite token is passed in so the implementation can build the link; it MUST NOT be logged.
     /// </summary>
     Task SendDoctorInviteAsync(string doctorName, string toEmail, string inviteToken, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// A free-form message a doctor sends to a patient about their booking. The caller supplies the
+    /// recipient from the booking (never from client input); subject/message length is validated upstream.
+    /// </summary>
+    Task SendPatientMessageAsync(string toEmail, string patientName, string subject, string message, CancellationToken cancellationToken = default);
 }

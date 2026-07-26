@@ -35,6 +35,11 @@ public class AppDbContext : DbContext, IApplicationDbContext
             booking.Property(b => b.Status)
                 .HasConversion<int>();
 
+            booking.Property(b => b.AppointmentStatus)
+                .HasConversion<int>();
+
+            booking.Property(b => b.DoctorNote).HasMaxLength(2000);
+
             booking.Property(b => b.ConfirmationTokenHash).HasMaxLength(128);
             booking.Property(b => b.CancellationTokenHash).HasMaxLength(128);
 
@@ -57,6 +62,7 @@ public class AppDbContext : DbContext, IApplicationDbContext
         modelBuilder.Entity<Doctor>(doctor =>
         {
             doctor.Property(d => d.AccountStatus).HasConversion<int>();
+            doctor.Property(d => d.PhotoContentType).HasMaxLength(100);
             doctor.Property(d => d.Email).HasMaxLength(256);
             doctor.Property(d => d.PasswordHash).HasMaxLength(256);
             doctor.Property(d => d.InviteTokenHash).HasMaxLength(128);

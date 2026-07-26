@@ -19,5 +19,18 @@ namespace ClinicSite.Api.Controllers
             var doctors = await _doctorService.GetDoctorsAsync(specialtyId);
             return Ok(doctors);
         }
+
+        /// <summary>Public: the doctor's photo, or 404 when none has been uploaded.</summary>
+        [HttpGet("{doctorId:guid}/photo")]
+        public async Task<IActionResult> GetPhoto(Guid doctorId)
+        {
+            var photo = await _doctorService.GetPhotoAsync(doctorId);
+            if (photo is null)
+            {
+                return NotFound();
+            }
+
+            return File(photo.Data, photo.ContentType);
+        }
     }
 }

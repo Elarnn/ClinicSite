@@ -14,10 +14,6 @@ function initials(fullName: string): string {
     .slice(0, 2);
 }
 
-function avatarUrl(doctor: DoctorDto): string {
-  return `https://i.pravatar.cc/96?u=${doctor.id}`;
-}
-
 interface Props {
   specialty: SpecialtyDto;
   onSelect: (doctor: DoctorDto) => void;
@@ -62,15 +58,7 @@ export function DoctorStep({ specialty, onSelect }: Props) {
         {doctors.map((d) => (
           <button key={d.id} className="card" onClick={() => onSelect(d)}>
             <span className="card-icon doctor-avatar">
-              <img
-                src={avatarUrl(d)}
-                alt=""
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                }}
-              />
-              <span className="doctor-avatar-fallback hidden">{initials(d.fullName)}</span>
+              <span className="doctor-avatar-fallback">{initials(d.fullName)}</span>
             </span>
             <span className="card-body">
               <span className="card-title">{d.fullName}</span>
